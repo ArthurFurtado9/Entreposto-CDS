@@ -41,12 +41,13 @@ export async function login(data: FormData) {
       .setExpirationTime('24h')
       .sign(JWT_SECRET)
 
-    // Set cookie (wait for cookies() resolution in Next.js 15)
+    // Tarefa 2: Cookie com sameSite "lax" para proteção CSRF
     const cookieStore = await cookies()
     cookieStore.set("auth_token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      maxAge: 60 * 60 * 24, // 24 hours
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24, // 24h
       path: "/",
     })
 
@@ -62,9 +63,16 @@ export async function register(data: FormData) {
   const name = data.get("name") as string
   const email = data.get("email") as string
   const password = data.get("password") as string
+  const inviteCode = data.get("inviteCode") as string
 
-  if (!name || !email || !password) {
+  if (!name || !email || !password || !inviteCode) {
     return { success: false, error: "Preencha todos os campos." }
+  }
+
+  // Tarefa 1: Validar código de convite contra a variável de ambiente
+  // Certifique-se de definir INVITE_CODE="SuaSenhaAqui" no .env
+  if (inviteCode !== process.env.INVITE_CODE) {
+    return { success: false, error: "Código de convite inválido." }
   }
 
   try {
@@ -78,7 +86,7 @@ export async function register(data: FormData) {
 
     const hashedPassword = await bcrypt.hash(password, 10)
 
-    const user = await prisma.user.create({
+    await prisma.user.create({
       data: {
         name,
         email,

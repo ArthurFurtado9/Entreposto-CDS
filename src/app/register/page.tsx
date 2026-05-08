@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { register } from "@/actions/auth"
-import { Loader2 } from "lucide-react"
+import { Loader2, ShieldCheck } from "lucide-react"
 import Link from "next/link"
 import { toast } from "sonner"
 
@@ -49,6 +49,22 @@ export default function RegisterPage() {
                 {error}
               </div>
             )}
+            <div className="space-y-2">
+              <Label htmlFor="inviteCode" className="flex items-center gap-1.5">
+                <ShieldCheck className="h-3.5 w-3.5 text-blue-600" />
+                Código de Convite
+              </Label>
+              <Input
+                id="inviteCode"
+                name="inviteCode"
+                type="password"
+                placeholder="Digite o código fornecido pelo administrador"
+                required
+              />
+              <p className="text-xs text-muted-foreground">
+                Necessário para criar uma conta. Solicite ao administrador.
+              </p>
+            </div>
             <div className="space-y-2">
               <Label htmlFor="name">Nome Completo</Label>
               <Input id="name" name="name" placeholder="Seu nome" required />
