@@ -13,18 +13,11 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Pencil, Loader2 } from "lucide-react"
-import { atualizarFornecedor } from "@/actions/fornecedores"
+import { Plus, Loader2 } from "lucide-react"
+import { criarInsumo } from "@/actions/producao"
 import { toast } from "sonner"
 
-interface Fornecedor {
-  id: string
-  nome: string
-  contato?: string | null
-  email?: string | null
-}
-
-export function EditarFornecedorModal({ fornecedor }: { fornecedor: Fornecedor }) {
+export function NovoInsumoModal() {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
 
@@ -35,17 +28,18 @@ export function EditarFornecedorModal({ fornecedor }: { fornecedor: Fornecedor }
     const formData = new FormData(event.currentTarget)
     const data = {
       nome: formData.get("nome") as string,
-      contato: formData.get("contato") as string,
-      email: formData.get("email") as string,
+      unidade: formData.get("unidade") as string,
+      estoqueAtual: Number(formData.get("estoqueAtual")),
+      estoqueMinimo: Number(formData.get("estoqueMinimo")),
     }
 
     try {
-      const result = await atualizarFornecedor(fornecedor.id, data)
+      const result = await criarInsumo(data)
       if (result.success) {
-        toast.success("Fornecedor atualizado com sucesso!")
+        toast.success("Insumo cadastrado com sucesso!")
         setOpen(false)
       } else {
-        toast.error(result.error || "Erro ao atualizar fornecedor.")
+        toast.error(result.error || "Erro ao cadastrar insumo.")
       }
     } catch (error) {
       toast.error("Erro inesperado.")
@@ -57,30 +51,37 @@ export function EditarFornecedorModal({ fornecedor }: { fornecedor: Fornecedor }
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger render={
-        <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-slate-900">
-          <Pencil className="h-4 w-4" />
+        <Button className="bg-slate-900">
+          <Plus className="mr-2 h-4 w-4" />
+          Cadastrar Insumo
         </Button>
       } />
       <DialogContent className="sm:max-w-[425px]">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
-            <DialogTitle>Editar Granja</DialogTitle>
+            <DialogTitle>Novo Insumo</DialogTitle>
             <DialogDescription>
-              Atualize os dados deste fornecedor.
+              Adicione um novo insumo ao estoque de produção.
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label htmlFor="nome">Nome da Granja / Empresa</Label>
-              <Input id="nome" name="nome" defaultValue={fornecedor.nome} placeholder="Ex: Granja Bela Vista" required />
+              <Label htmlFor="nome">Nome do Insumo</Label>
+              <Input id="nome" name="nome" placeholder="Ex: Bandeja 30 Ovos" required />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="contato">Contato / Telefone</Label>
-              <Input id="contato" name="contato" defaultValue={fornecedor.contato || ""} placeholder="(00) 00000-0000" />
+              <Label htmlFor="unidade">Unidade de Medida</Label>
+              <Input id="unidade" name="unidade" placeholder="Ex: Unidade, Cento, Rolo" required />
             </div>
-            <div className="grid gap-2">
-              <Label htmlFor="email">E-mail</Label>
-              <Input id="email" name="email" type="email" defaultValue={fornecedor.email || ""} placeholder="contato@granja.com" />
+            <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="estoqueAtual">Estoque Atual</Label>
+                <Input id="estoqueAtual" name="estoqueAtual" type="number" min="0" step="0.01" defaultValue="0" required />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="estoqueMinimo">Estoque Mínimo</Label>
+                <Input id="estoqueMinimo" name="estoqueMinimo" type="number" min="0" step="0.01" defaultValue="0" required />
+              </div>
             </div>
           </div>
           <DialogFooter>
@@ -88,7 +89,8 @@ export function EditarFornecedorModal({ fornecedor }: { fornecedor: Fornecedor }
               Cancelar
             </Button>
             <Button type="submit" disabled={loading} className="bg-slate-900">
-              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Salvar Alterações"}
+              {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+              Salvar
             </Button>
           </DialogFooter>
         </form>

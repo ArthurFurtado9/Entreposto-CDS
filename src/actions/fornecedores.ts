@@ -15,13 +15,29 @@ export async function getFornecedores() {
   }
 }
 
-export async function criarFornecedor(data: { nome: string; contato?: string; email?: string }) {
+export async function criarFornecedor(data: { 
+  nome: string; 
+  cnpj?: string;
+  contato?: string; 
+  email?: string;
+  cep?: string;
+  rua?: string;
+  bairro?: string;
+  cidade?: string;
+  estado?: string;
+}) {
   try {
     const fornecedor = await prisma.fornecedor.create({
       data: {
         nome: data.nome,
+        cnpj: data.cnpj,
         contato: data.contato,
         email: data.email,
+        cep: data.cep,
+        rua: data.rua,
+        bairro: data.bairro,
+        cidade: data.cidade,
+        estado: data.estado,
       },
     })
     revalidatePath("/fornecedores")
@@ -77,14 +93,30 @@ export async function registrarRecebimentoLote(data: {
   }
 }
 
-export async function atualizarFornecedor(id: string, data: { nome: string; contato?: string; email?: string }) {
+export async function atualizarFornecedor(id: string, data: { 
+  nome: string; 
+  cnpj?: string;
+  contato?: string; 
+  email?: string;
+  cep?: string;
+  rua?: string;
+  bairro?: string;
+  cidade?: string;
+  estado?: string;
+}) {
   try {
     const fornecedor = await prisma.fornecedor.update({
       where: { id },
       data: {
         nome: data.nome,
+        cnpj: data.cnpj,
         contato: data.contato,
         email: data.email,
+        cep: data.cep,
+        rua: data.rua,
+        bairro: data.bairro,
+        cidade: data.cidade,
+        estado: data.estado,
       },
     })
     revalidatePath("/fornecedores")

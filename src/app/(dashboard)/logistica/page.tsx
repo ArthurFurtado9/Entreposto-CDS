@@ -16,17 +16,20 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { CheckCircle2 } from "lucide-react"
-import { getPedidosLogistica, getLotesDisponiveis } from "@/actions/logistica"
+import { getPedidosLogistica, getLotesDisponiveis, getClientes } from "@/actions/logistica"
 import { BotaoCarregamento } from "./botao-carregamento"
+import { NovoClienteModal } from "./novo-cliente-modal"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
 
 export default async function LogisticaPage() {
   const resultPedidos = await getPedidosLogistica()
   const resultLotes = await getLotesDisponiveis()
+  const resultClientes = await getClientes()
   
   const pedidos = (resultPedidos.success && resultPedidos.data) ? resultPedidos.data : []
   const estoqueLotes = (resultLotes.success && resultLotes.data) ? resultLotes.data : []
+  const clientes = (resultClientes.success && resultClientes.data) ? resultClientes.data : []
 
   return (
     <div className="flex flex-col gap-6">
@@ -35,11 +38,14 @@ export default async function LogisticaPage() {
           <h1 className="text-3xl font-bold tracking-tight">Logística e Expedição</h1>
           <p className="text-muted-foreground">Gerencie a separação de pedidos B2B e alocação de estoque.</p>
         </div>
-        <BotaoCarregamento lotes={estoqueLotes} />
+        <div className="flex items-center gap-3">
+          <NovoClienteModal />
+          <BotaoCarregamento lotes={estoqueLotes} clientes={clientes} />
+        </div>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
-        <Card>
+        <Card className="glass-panel">
           <CardHeader>
             <CardTitle>Painel de Separação (Picking)</CardTitle>
             <CardDescription>Pedidos aguardando separação e envio.</CardDescription>
@@ -77,7 +83,7 @@ export default async function LogisticaPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="glass-panel">
           <CardHeader>
             <CardTitle>Alocação FIFO (Smart Picking)</CardTitle>
             <CardDescription>Lotes sugeridos pelo sistema para saída prioritária.</CardDescription>

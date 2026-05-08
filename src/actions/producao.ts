@@ -130,3 +130,21 @@ export async function atualizarEstoqueInsumoExato(id: string, quantidade: number
     return { success: false, error: "Falha ao atualizar estoque." }
   }
 }
+
+export async function criarInsumo(data: { nome: string; unidade: string; estoqueMinimo: number; estoqueAtual: number }) {
+  try {
+    const insumo = await prisma.insumo.create({
+      data: {
+        nome: data.nome,
+        unidade: data.unidade,
+        estoqueMinimo: data.estoqueMinimo,
+        estoqueAtual: data.estoqueAtual
+      }
+    })
+    revalidatePath("/producao")
+    return { success: true, data: insumo }
+  } catch (error) {
+    console.error("Erro ao criar insumo:", error)
+    return { success: false, error: "Falha ao criar insumo." }
+  }
+}

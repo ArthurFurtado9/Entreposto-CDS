@@ -1,5 +1,6 @@
 import { getInsumos } from "@/actions/producao"
 import { InsumosClient } from "./insumos-client"
+import { NovoInsumoModal } from "./novo-insumo-modal"
 
 export default async function ProducaoPage() {
   const result = await getInsumos()
@@ -12,9 +13,11 @@ export default async function ProducaoPage() {
           <h1 className="text-3xl font-bold tracking-tight">Produção e Insumos</h1>
           <p className="text-muted-foreground">Gerencie o estoque de embalagens e a emissão de lotes internos.</p>
         </div>
+        <NovoInsumoModal />
       </div>
 
       <InsumosClient initialInsumos={insumos} />
     </div>
   )
 }
+

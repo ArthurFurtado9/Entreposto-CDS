@@ -13,8 +13,14 @@ datasource db {
 model Fornecedor {
   id        String       @id @default(cuid())
   nome      String
+  cnpj      String?      @unique
   contato   String?
   email     String?      @unique
+  cep       String?
+  rua       String?
+  bairro    String?
+  cidade    String?
+  estado    String?
   lotes     LoteEntrada[]
   createdAt DateTime     @default(now())
   updatedAt DateTime     @updatedAt
@@ -153,4 +159,13 @@ enum FinanceiroStatus {
   PENDENTE
   PAGO
   CANCELADO
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

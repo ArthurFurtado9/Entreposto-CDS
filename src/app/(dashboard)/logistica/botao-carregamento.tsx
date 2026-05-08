@@ -26,7 +26,7 @@ import { toast } from "sonner"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
 
-export function BotaoCarregamento({ lotes }: { lotes: any[] }) {
+export function BotaoCarregamento({ lotes, clientes = [] }: { lotes: any[], clientes?: any[] }) {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [loteId, setLoteId] = useState("")
@@ -93,12 +93,12 @@ export function BotaoCarregamento({ lotes }: { lotes: any[] }) {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
+      <DialogTrigger render={
         <Button className="bg-slate-900">
           <Truck className="mr-2 h-4 w-4" />
           Iniciar Carregamento
         </Button>
-      </DialogTrigger>
+      } />
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
@@ -112,11 +112,16 @@ export function BotaoCarregamento({ lotes }: { lotes: any[] }) {
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="cliente">Nome do Cliente</Label>
-                <Input id="cliente" name="cliente" placeholder="Ex: Supermercado Central" required />
+                <Input id="cliente" name="cliente" list="clientes-list" placeholder="Ex: Supermercado Central" required autoComplete="off" />
+                <datalist id="clientes-list">
+                  {clientes.map(c => (
+                    <option key={c.id} value={c.nome} />
+                  ))}
+                </datalist>
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="lote">Lote Interno (FIFO)</Label>
-                <Select value={loteId} onValueChange={setLoteId} required>
+                <Select value={loteId} onValueChange={(val) => setLoteId(val || "")} required>
                   <SelectTrigger>
                     <SelectValue placeholder="Selecione..." />
                   </SelectTrigger>

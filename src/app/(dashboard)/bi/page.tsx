@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { 
   Card, 
   CardContent, 
@@ -16,16 +17,28 @@ import {
   Tooltip,
   Cell
 } from "recharts"
-
-const data = [
-  { name: "Granja Bela Vista", rendimento: 98.5, loss: 1.5 },
-  { name: "Sítio das Palmeiras", rendimento: 94.2, loss: 5.8 },
-  { name: "Ovos do Vale", rendimento: 92.8, loss: 7.2 },
-  { name: "Fazenda Sol", rendimento: 89.5, loss: 10.5 },
-  { name: "Recanto Caipira", rendimento: 97.1, loss: 2.9 },
-]
+import { getBIData } from "@/actions/bi"
 
 export default function BIPage() {
+  const [data, setData] = useState<{ ranking: any[], alocacaoPerdas: any[] }>({
+    ranking: [],
+    alocacaoPerdas: []
+  })
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    getBIData().then((result) => {
+      if (result.success && result.data) {
+        setData(result.data)
+      }
+      setLoading(false)
+    })
+  }, [])
+
+  if (loading) {
+    return <div className="p-8 text-center text-muted-foreground">Carregando dados de BI...</div>
+  }
+
   return (
     <div className="flex flex-col gap-6">
       <div>
@@ -41,7 +54,7 @@ export default function BIPage() {
           </CardHeader>
           <CardContent className="h-[350px]">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={data}>
+              <BarChart data={data.ranking}>
                 <XAxis 
                   dataKey="name" 
                   stroke="#888888" 
@@ -55,7 +68,7 @@ export default function BIPage() {
                   tickLine={false} 
                   axisLine={false} 
                   tickFormatter={(value) => `${value}%`}
-                  domain={[80, 100]}
+                  domain={[0, 100]}
                 />
                 <Tooltip 
                    cursor={{fill: 'transparent'}}
@@ -73,7 +86,7 @@ export default function BIPage() {
                    }}
                 />
                 <Bar dataKey="rendimento" radius={[4, 4, 0, 0]}>
-                  {data.map((entry, index) => (
+                  {data.ranking.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.rendimento > 95 ? "#22c55e" : entry.rendimento > 90 ? "#eab308" : "#ef4444"} />
                   ))}
                 </Bar>
@@ -85,15 +98,14 @@ export default function BIPage() {
         <Card className="col-span-1">
           <CardHeader>
             <CardTitle>Alocação de Perdas</CardTitle>
-            <CardDescription>Principais motivos de descarte no último mês.</CardDescription>
+            <CardDescription>Principais motivos de descarte no sistema.</CardDescription>
           </CardHeader>
           <CardContent className="flex items-center justify-center h-[350px]">
              <div className="space-y-6 w-full max-w-[300px]">
-                {[
-                  { label: "Ovos Trincados", value: "65%", color: "bg-orange-500" },
-                  { label: "Quebra no Transporte", value: "25%", color: "bg-red-500" },
-                  { label: "Sujeira Excessiva", value: "10%", color: "bg-slate-500" },
-                ].map((item) => (
+                {data.alocacaoPerdas.length === 0 && (
+                   <p className="text-sm text-muted-foreground text-center">Nenhum dado de perda registrado.</p>
+                )}
+                {data.alocacaoPerdas.map((item) => (
                    <div key={item.label} className="space-y-2">
                       <div className="flex justify-between text-sm">
                         <span>{item.label}</span>

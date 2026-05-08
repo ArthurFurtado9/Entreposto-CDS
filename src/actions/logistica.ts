@@ -64,6 +64,19 @@ export async function getLotesDisponiveis() {
   }
 }
 
+export async function getClientes() {
+  try {
+    const clientes = await prisma.cliente.findMany({
+      orderBy: { nome: 'asc' },
+      select: { id: true, nome: true }
+    })
+    return { success: true, data: clientes }
+  } catch (error) {
+    console.error("Erro ao buscar clientes:", error)
+    return { success: false, error: "Falha ao buscar clientes." }
+  }
+}
+
 interface ItemCarregamento {
   tipo: '6' | '12' | '15'
   quantidadeBandejas: number
@@ -170,3 +183,20 @@ export async function registrarCarregamento(data: RegistrarCarregamentoInput) {
     return { success: false, error: "Falha ao registrar carregamento e gerar faturamento." }
   }
 }
+
+export async function criarCliente(data: { nome: string; cnpj: string }) {
+  try {
+    const cliente = await prisma.cliente.create({
+      data: {
+        nome: data.nome,
+        cnpj: data.cnpj || null
+      }
+    })
+    revalidatePath("/logistica")
+    return { success: true, data: cliente }
+  } catch (error) {
+    console.error("Erro ao criar cliente:", error)
+    return { success: false, error: "Falha ao criar cliente." }
+  }
+}
+

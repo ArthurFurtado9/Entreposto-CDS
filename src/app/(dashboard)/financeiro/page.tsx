@@ -43,7 +43,7 @@ export default async function FinanceiroPage() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-4">
-        <Card className="border-none shadow-sm bg-white overflow-hidden">
+        <Card className="border-none shadow-sm glass-panel hover-lift overflow-hidden">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-slate-600">Saldo Projetado</CardTitle>
             <Wallet className="h-4 w-4 text-amber-500" />
@@ -56,7 +56,7 @@ export default async function FinanceiroPage() {
           </CardContent>
         </Card>
 
-        <Card className="border-none shadow-sm bg-white overflow-hidden">
+        <Card className="border-none shadow-sm glass-panel hover-lift overflow-hidden">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-slate-600">Faturamento (Mês)</CardTitle>
             <CircleDollarSign className="h-4 w-4 text-blue-500" />
@@ -72,7 +72,7 @@ export default async function FinanceiroPage() {
           </CardContent>
         </Card>
 
-        <Card className="border-none shadow-sm bg-white overflow-hidden">
+        <Card className="border-none shadow-sm glass-panel hover-lift overflow-hidden">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-slate-600">Saídas Pendentes</CardTitle>
             <ArrowDownCircle className="h-4 w-4 text-red-500" />
@@ -88,7 +88,7 @@ export default async function FinanceiroPage() {
           </CardContent>
         </Card>
 
-        <Card className="border-none shadow-sm bg-white overflow-hidden">
+        <Card className="border-none shadow-sm glass-panel hover-lift overflow-hidden">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-slate-600">Entradas Pendentes</CardTitle>
             <ArrowUpCircle className="h-4 w-4 text-emerald-500" />
@@ -111,7 +111,7 @@ export default async function FinanceiroPage() {
         </div>
 
         <TabsContent value="pagar" className="border-none p-0 outline-none">
-           <Card className="border-none shadow-sm bg-white">
+           <Card className="border-none shadow-sm glass-panel">
               <CardHeader className="border-b border-slate-50">
                 <div className="flex items-center justify-between">
                   <div>
@@ -130,7 +130,7 @@ export default async function FinanceiroPage() {
         </TabsContent>
 
         <TabsContent value="receber" className="border-none p-0 outline-none">
-           <Card className="border-none shadow-sm bg-white">
+           <Card className="border-none shadow-sm glass-panel">
               <CardHeader className="border-b border-slate-50">
                 <div className="flex items-center justify-between">
                   <div>

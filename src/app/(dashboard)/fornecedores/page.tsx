@@ -16,7 +16,6 @@ import {
 import { getFornecedores } from "@/actions/fornecedores"
 import { NovoFornecedorModal } from "./novo-fornecedor-modal"
 import { EditarFornecedorModal } from "./editar-fornecedor-modal"
-import { CadastrarInsumosButton } from "./cadastrar-insumos-button"
 import { Building2, Phone, Mail, Calendar } from "lucide-react"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
@@ -33,7 +32,6 @@ export default async function FornecedoresPage() {
           <p className="text-muted-foreground">Cadastre e gerencie as granjas parceiras.</p>
         </div>
         <div className="flex items-center gap-3">
-          <CadastrarInsumosButton />
           <NovoFornecedorModal />
         </div>
       </div>
