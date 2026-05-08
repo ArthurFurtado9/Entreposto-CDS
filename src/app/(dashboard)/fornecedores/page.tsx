@@ -1,0 +1,103 @@
+import { 
+  Card, 
+  CardContent, 
+  CardHeader, 
+  CardTitle,
+  CardDescription
+} from "@/components/ui/card"
+import { 
+  Table, 
+  TableBody, 
+  TableCell, 
+  TableHead, 
+  TableHeader, 
+  TableRow 
+} from "@/components/ui/table"
+import { getFornecedores } from "@/actions/fornecedores"
+import { NovoFornecedorModal } from "./novo-fornecedor-modal"
+import { EditarFornecedorModal } from "./editar-fornecedor-modal"
+import { CadastrarInsumosButton } from "./cadastrar-insumos-button"
+import { Building2, Phone, Mail, Calendar } from "lucide-react"
+import { format } from "date-fns"
+import { ptBR } from "date-fns/locale"
+
+export default async function FornecedoresPage() {
+  const result = await getFornecedores()
+  const fornecedores = (result.success && result.data) ? result.data : []
+
+  return (
+    <div className="flex flex-col gap-8 min-h-screen bg-slate-50/50 -m-4 p-4 md:-m-6 md:p-6 lg:-m-8 lg:p-8">
+      <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-2">
+          <h1 className="text-3xl font-bold tracking-tight text-slate-900">Gestão de Fornecedores</h1>
+          <p className="text-muted-foreground">Cadastre e gerencie as granjas parceiras.</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <CadastrarInsumosButton />
+          <NovoFornecedorModal />
+        </div>
+      </div>
+
+      <Card className="border-none shadow-sm bg-white">
+        <CardHeader>
+          <CardTitle>Lista de Granjas</CardTitle>
+          <CardDescription>Todas as empresas cadastradas no sistema.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Fornecedor</TableHead>
+                <TableHead>Contato</TableHead>
+                <TableHead>E-mail</TableHead>
+                <TableHead>Cadastro</TableHead>
+                <TableHead className="w-[80px]">Ações</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {fornecedores.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={4} className="text-center py-12 text-muted-foreground">
+                    Nenhum fornecedor cadastrado.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                fornecedores.map((f: any) => (
+                  <TableRow key={f.id}>
+                    <TableCell className="font-medium">
+                      <div className="flex items-center gap-2">
+                        <Building2 className="h-4 w-4 text-slate-400" />
+                        {f.nome}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Phone className="h-3.5 w-3.5 text-slate-400" />
+                        {f.contato || "N/A"}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Mail className="h-3.5 w-3.5 text-slate-400" />
+                        {f.email || "N/A"}
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      <div className="flex items-center gap-2">
+                        <Calendar className="h-3.5 w-3.5 text-slate-400" />
+                        {format(new Date(f.createdAt), "dd/MM/yyyy", { locale: ptBR })}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <EditarFornecedorModal fornecedor={f} />
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}

@@ -1,0 +1,156 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  engineType = "library"
+}
+
+datasource db {
+  provider  = "postgresql"
+}
+
+model Fornecedor {
+  id        String       @id @default(cuid())
+  nome      String
+  contato   String?
+  email     String?      @unique
+  lotes     LoteEntrada[]
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+}
+
+model Insumo {
+  id             String          @id @default(cuid())
+  nome           String
+  unidade        String          // ex: Unidade, Milheiro, Rolo
+  estoqueAtual   Float           @default(0)
+  estoqueMinimo  Float           @default(0)
+  usoProducao    UsoInsumo[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+}
+
+model LoteEntrada {
+  id                String       @id @default(cuid())
+  fornecedorId      String
+  fornecedor        Fornecedor   @relation(fields: [fornecedorId], references: [id])
+  quantidadeOriginal Int         // Quantidade total de ovos recebidos
+  dataRecebimento   DateTime     @default(now())
+  validadeOriginal  DateTime
+  status            LoteStatus   @default(RECEBIDO)
+  
+  // Triagem
+  quantidadeTrincados Int        @default(0)
+  quantidadeQuebrados Int        @default(0)
+  quantidadeDescarte  Int        @default(0)
+  quantidadeAproveitada Int      @default(0) // Calculado: Original - (Trincados + Quebrados + Descarte)
+  rendimentoPorcentagem Float    @default(0) // Calculado: (Aproveitada / Original) * 100
+
+  lotesInternos     LoteInterno[]
+  financeiro        Financeiro?
+  
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+}
+
+enum LoteStatus {
+  RECEBIDO
+  AGUARDANDO_TRIAGEM
+  TRIADO
+}
+
+model LoteInterno {
+  id                String       @id @default(cuid())
+  loteEntradaId     String
+  loteEntrada       LoteEntrada  @relation(fields: [loteEntradaId], references: [id])
+  quantidadeOvos    Int
+  dataEmbalagem     DateTime     @default(now())
+  validadeSugerida  DateTime     // Calculada com base na validade original
+  
+  insumosUsados     UsoInsumo[]
+  estoqueDisponivel Int
+  itensPedido       ItemPedido[]
+
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+}
+
+model UsoInsumo {
+  id            String      @id @default(cuid())
+  insumoId      String
+  insumo        Insumo      @relation(fields: [insumoId], references: [id])
+  loteInternoId String
+  loteInterno   LoteInterno @relation(fields: [loteInternoId], references: [id])
+  quantidade    Float
+
+  createdAt     DateTime    @default(now())
+}
+
+model Cliente {
+  id        String   @id @default(cuid())
+  nome      String
+  cnpj      String?  @unique
+  pedidos   Pedido[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Pedido {
+  id            String       @id @default(cuid())
+  clienteId     String
+  cliente       Cliente      @relation(fields: [clienteId], references: [id])
+  status        PedidoStatus @default(PENDENTE) // PENDENTE, SEPARACAO, ENVIADO, ENTREGUE
+  itens         ItemPedido[]
+  financeiro    Financeiro?
+  dataPedido    DateTime     @default(now())
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+}
+
+model ItemPedido {
+  id            String      @id @default(cuid())
+  pedidoId      String
+  pedido        Pedido      @relation(fields: [pedidoId], references: [id])
+  loteInternoId String
+  loteInterno   LoteInterno @relation(fields: [loteInternoId], references: [id])
+  quantidade    Int         // Quantidade de ovos do lote interno reservados
+  
+  createdAt     DateTime    @default(now())
+}
+
+model Financeiro {
+  id            String          @id @default(cuid())
+  tipo          FinanceiroTipo  // PAGAR ou RECEBER
+  valor         Decimal
+  status        FinanceiroStatus @default(PENDENTE)
+  dataVencimento DateTime
+  dataPagamento DateTime?
+
+  // Relacionamentos opcionais
+  loteEntradaId String?         @unique
+  loteEntrada   LoteEntrada?    @relation(fields: [loteEntradaId], references: [id])
+  pedidoId      String?         @unique
+  pedido        Pedido?         @relation(fields: [pedidoId], references: [id])
+
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+}
+
+enum PedidoStatus {
+  PENDENTE
+  SEPARACAO
+  ENVIADO
+  ENTREGUE
+}
+
+enum FinanceiroTipo {
+  PAGAR
+  RECEBER
+}
+
+enum FinanceiroStatus {
+  PENDENTE
+  PAGO
+  CANCELADO
+}
