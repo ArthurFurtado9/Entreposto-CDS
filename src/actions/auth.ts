@@ -20,6 +20,8 @@ export async function login(data: FormData) {
     return { success: false, error: "Preencha todos os campos." }
   }
 
+  let shouldRedirect = false
+
   try {
     const user = await prisma.user.findUnique({
       where: { email },
@@ -41,7 +43,7 @@ export async function login(data: FormData) {
       .setExpirationTime('24h')
       .sign(JWT_SECRET)
 
-    // Tarefa 2: Cookie com sameSite "lax" para proteção CSRF
+    // Cookie com sameSite "lax" para proteção CSRF
     const cookieStore = await cookies()
     cookieStore.set("auth_token", token, {
       httpOnly: true,
@@ -51,12 +53,17 @@ export async function login(data: FormData) {
       path: "/",
     })
 
+    shouldRedirect = true
   } catch (error) {
     console.error("Erro no login:", error)
-    return { success: false, error: "Ocorreu um erro ao realizar o login." }
+    return { success: false, error: "Erro de conexão com o banco de dados. Verifique a DATABASE_URL." }
   }
-  
-  redirect("/dashboard")
+
+  // redirect() PRECISA ficar FORA do try/catch porque lança um erro NEXT_REDIRECT
+  // que seria capturado pelo catch, impedindo o redirecionamento
+  if (shouldRedirect) {
+    redirect("/dashboard")
+  }
 }
 
 export async function register(data: FormData) {
@@ -69,7 +76,7 @@ export async function register(data: FormData) {
     return { success: false, error: "Preencha todos os campos." }
   }
 
-  // Tarefa 1: Validar código de convite contra a variável de ambiente
+  // Validar código de convite contra a variável de ambiente
   // Certifique-se de definir INVITE_CODE="SuaSenhaAqui" no .env
   if (inviteCode !== process.env.INVITE_CODE) {
     return { success: false, error: "Código de convite inválido." }
@@ -97,7 +104,7 @@ export async function register(data: FormData) {
     return { success: true }
   } catch (error) {
     console.error("Erro no registro:", error)
-    return { success: false, error: "Ocorreu um erro ao criar a conta." }
+    return { success: false, error: "Erro de conexão com o banco de dados. Verifique a DATABASE_URL." }
   }
 }
 

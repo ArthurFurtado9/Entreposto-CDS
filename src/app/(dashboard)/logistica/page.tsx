@@ -33,12 +33,12 @@ export default async function LogisticaPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Logística e Expedição</h1>
-          <p className="text-muted-foreground">Gerencie a separação de pedidos B2B e alocação de estoque.</p>
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight">Logística e Expedição</h1>
+          <p className="text-sm text-muted-foreground">Gerencie a separação de pedidos B2B e alocação de estoque.</p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 flex-wrap">
           <NovoClienteModal />
           <BotaoCarregamento lotes={estoqueLotes} clientes={clientes} />
         </div>
@@ -51,7 +51,8 @@ export default async function LogisticaPage() {
             <CardDescription>Pedidos aguardando separação e envio.</CardDescription>
           </CardHeader>
           <CardContent>
-            <Table>
+            <div className="overflow-x-auto -mx-4 sm:mx-0">
+            <Table className="min-w-[500px]">
               <TableHeader>
                 <TableRow>
                   <TableHead>Pedido</TableHead>
@@ -80,6 +81,7 @@ export default async function LogisticaPage() {
                 ))}
               </TableBody>
             </Table>
+            </div>
           </CardContent>
         </Card>
 

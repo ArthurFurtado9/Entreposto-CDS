@@ -47,7 +47,8 @@ export function ContasApagarTable({ initialData }: ContasApagarTableProps) {
   }
 
   return (
-    <Table>
+    <div className="overflow-x-auto">
+    <Table className="min-w-[700px]">
       <TableHeader>
         <TableRow>
           <TableHead>Fornecedor</TableHead>
@@ -117,5 +118,6 @@ export function ContasApagarTable({ initialData }: ContasApagarTableProps) {
         )}
       </TableBody>
     </Table>
+    </div>
   )
 }

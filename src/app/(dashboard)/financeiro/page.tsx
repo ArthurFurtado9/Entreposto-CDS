@@ -38,18 +38,18 @@ export default async function FinanceiroPage() {
   return (
     <div className="flex flex-col gap-8 min-h-screen bg-slate-50/50 -m-4 p-4 md:-m-6 md:p-6 lg:-m-8 lg:p-8">
       <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900">Módulo Financeiro</h1>
+        <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">Módulo Financeiro</h1>
         <p className="text-muted-foreground">Gestão automatizada de contas e fluxo de caixa por lote.</p>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-4">
+      <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
         <Card className="border-none shadow-sm glass-panel hover-lift overflow-hidden">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-slate-600">Saldo Projetado</CardTitle>
             <Wallet className="h-4 w-4 text-amber-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-slate-900">
+            <div className="text-xl sm:text-2xl font-bold text-slate-900">
               {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(totalSaldo)}
             </div>
             <p className="text-xs text-muted-foreground mt-1">Saldo Projetado (Receber - Pagar)</p>
@@ -62,7 +62,7 @@ export default async function FinanceiroPage() {
             <CircleDollarSign className="h-4 w-4 text-blue-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-blue-600">
+            <div className="text-xl sm:text-2xl font-bold text-blue-600">
               {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(contasAReceber.reduce((acc, c) => acc + Number(c.valor), 0))}
             </div>
             <div className="flex items-center gap-1 mt-1">
@@ -78,7 +78,7 @@ export default async function FinanceiroPage() {
             <ArrowDownCircle className="h-4 w-4 text-red-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-red-600">
+            <div className="text-xl sm:text-2xl font-bold text-red-600">
                {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(totalPendentePagar)}
             </div>
             <div className="flex items-center gap-1 mt-1">
@@ -94,7 +94,7 @@ export default async function FinanceiroPage() {
             <ArrowUpCircle className="h-4 w-4 text-emerald-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-emerald-600">
+            <div className="text-xl sm:text-2xl font-bold text-emerald-600">
               {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(totalPendenteReceber)}
             </div>
             <p className="text-xs text-muted-foreground mt-1">Aguardando recebimento</p>

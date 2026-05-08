@@ -8,8 +8,8 @@ export default async function OvoscopiaPage() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Triagem (Ovoscopia)</h1>
-        <p className="text-muted-foreground">Selecione um lote pendente e informe o resultado da triagem manual.</p>
+        <h1 className="text-xl sm:text-2xl font-bold tracking-tight">Triagem (Ovoscopia)</h1>
+        <p className="text-sm text-muted-foreground">Selecione um lote pendente e informe o resultado da triagem manual.</p>
       </div>
 
       <OvoscopiaClient lotes={lotes} />

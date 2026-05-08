@@ -26,14 +26,12 @@ export default async function FornecedoresPage() {
 
   return (
     <div className="flex flex-col gap-8 min-h-screen bg-slate-50/50 -m-4 p-4 md:-m-6 md:p-6 lg:-m-8 lg:p-8">
-      <div className="flex items-center justify-between">
-        <div className="flex flex-col gap-2">
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900">Gestão de Fornecedores</h1>
-          <p className="text-muted-foreground">Cadastre e gerencie as granjas parceiras.</p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex flex-col gap-1">
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">Gestão de Fornecedores</h1>
+          <p className="text-sm text-muted-foreground">Cadastre e gerencie as granjas parceiras.</p>
         </div>
-        <div className="flex items-center gap-3">
-          <NovoFornecedorModal />
-        </div>
+        <NovoFornecedorModal />
       </div>
 
       <Card className="border-none shadow-sm bg-white">
@@ -42,7 +40,8 @@ export default async function FornecedoresPage() {
           <CardDescription>Todas as empresas cadastradas no sistema.</CardDescription>
         </CardHeader>
         <CardContent>
-          <Table>
+          <div className="overflow-x-auto -mx-4 sm:mx-0">
+          <Table className="min-w-[600px]">
             <TableHeader>
               <TableRow>
                 <TableHead>Fornecedor</TableHead>
@@ -94,6 +93,7 @@ export default async function FornecedoresPage() {
               )}
             </TableBody>
           </Table>
+          </div>
         </CardContent>
       </Card>
     </div>

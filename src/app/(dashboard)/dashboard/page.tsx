@@ -27,7 +27,7 @@ export default async function DashboardPage() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900">Dashboard</h1>
+        <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">Dashboard</h1>
         <p className="text-sm text-slate-500 mt-1">Bem-vindo ao centro de controle do Entreposto Serra.</p>
       </div>
 
@@ -99,7 +99,7 @@ export default async function DashboardPage() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <Card className="col-span-4 glass-panel hover-lift">
+        <Card className="md:col-span-1 lg:col-span-4 glass-panel hover-lift">
           <CardHeader>
             <CardTitle className="text-base font-semibold text-slate-900">Visão Geral de Produção</CardTitle>
             <CardDescription className="text-sm text-slate-500">
@@ -116,7 +116,7 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="col-span-3 glass-panel hover-lift">
+        <Card className="md:col-span-1 lg:col-span-3 glass-panel hover-lift">
           <CardHeader>
             <CardTitle className="text-base font-semibold text-slate-900">Ranking de Qualidade</CardTitle>
             <CardDescription className="text-sm text-slate-500">

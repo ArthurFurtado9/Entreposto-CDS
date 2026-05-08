@@ -47,7 +47,8 @@ export function ContasAReceberTable({ initialData }: ContasAReceberTableProps) {
   }
 
   return (
-    <Table>
+    <div className="overflow-x-auto">
+    <Table className="min-w-[700px]">
       <TableHeader>
         <TableRow>
           <TableHead>Cliente</TableHead>
@@ -117,5 +118,6 @@ export function ContasAReceberTable({ initialData }: ContasAReceberTableProps) {
         )}
       </TableBody>
     </Table>
+    </div>
   )
 }

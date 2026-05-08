@@ -42,8 +42,8 @@ export default function BIPage() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Business Intelligence</h1>
-        <p className="text-muted-foreground">Análise de desempenho, qualidade e indicadores estratégicos.</p>
+        <h1 className="text-xl sm:text-2xl font-bold tracking-tight">Business Intelligence</h1>
+        <p className="text-sm text-muted-foreground">Análise de desempenho, qualidade e indicadores estratégicos.</p>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
