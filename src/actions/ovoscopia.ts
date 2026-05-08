@@ -67,17 +67,6 @@ export async function finalizarTriagem(data: {
         }
       })
 
-      // 3. Gera a Conta a Pagar
-      await tx.financeiro.create({
-        data: {
-          tipo: "PAGAR",
-          valor: quantidadeAproveitada * 0.45, // R$ 0,45 por ovo aproveitado
-          status: "PENDENTE",
-          dataVencimento: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000), // 15 dias
-          loteEntradaId: lote.id
-        }
-      })
-
       return updatedLote
     })
 

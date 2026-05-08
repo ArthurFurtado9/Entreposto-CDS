@@ -114,3 +114,19 @@ export async function consumirEstoqueInsumo(id: string, quantidade: number) {
     return { success: false, error: "Falha ao consumir estoque." }
   }
 }
+
+export async function atualizarEstoqueInsumoExato(id: string, quantidade: number) {
+  try {
+    const insumo = await prisma.insumo.update({
+      where: { id },
+      data: {
+        estoqueAtual: quantidade
+      }
+    })
+    revalidatePath("/producao")
+    return { success: true, data: insumo }
+  } catch (error) {
+    console.error("Erro ao atualizar estoque exato:", error)
+    return { success: false, error: "Falha ao atualizar estoque." }
+  }
+}

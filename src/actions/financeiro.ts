@@ -46,3 +46,28 @@ export async function darBaixaConta(id: string) {
     return { success: false, error: "Falha ao processar o pagamento." }
   }
 }
+
+export async function getContasAReceber() {
+  try {
+    const contas = await prisma.financeiro.findMany({
+      where: {
+        tipo: "RECEBER",
+      },
+      include: {
+        pedido: {
+          include: {
+            cliente: true,
+          },
+        },
+      },
+      orderBy: {
+        dataVencimento: "asc",
+      },
+    })
+
+    return { success: true, data: contas }
+  } catch (error) {
+    console.error("Erro ao buscar contas a receber:", error)
+    return { success: false, error: "Falha ao buscar contas a receber." }
+  }
+}

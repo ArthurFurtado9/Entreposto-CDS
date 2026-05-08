@@ -64,22 +64,109 @@ export async function getLotesDisponiveis() {
   }
 }
 
-export async function iniciarCarregamento() {
+interface ItemCarregamento {
+  tipo: '6' | '12' | '15'
+  quantidadeBandejas: number
+  precoBandeja: number
+}
+
+interface RegistrarCarregamentoInput {
+  loteInternoId: string
+  nomeCliente: string
+  itens: ItemCarregamento[]
+  valorTotal: number
+}
+
+export async function registrarCarregamento(data: RegistrarCarregamentoInput) {
   try {
-    // Atualiza todos os pedidos em SEPARACAO para ENVIADO
-    const atualizados = await prisma.pedido.updateMany({
-      where: {
-        status: "SEPARACAO"
-      },
-      data: {
-        status: "ENVIADO"
+    const result = await prisma.$transaction(async (tx) => {
+      // 1. Busca ou cria o cliente
+      let cliente = await tx.cliente.findFirst({
+        where: { nome: data.nomeCliente }
+      })
+
+      if (!cliente) {
+        cliente = await tx.cliente.create({
+          data: { nome: data.nomeCliente }
+        })
       }
+
+      // 2. Cria o pedido
+      const pedido = await tx.pedido.create({
+        data: {
+          clienteId: cliente.id,
+          status: "ENVIADO",
+          dataPedido: new Date()
+        }
+      })
+
+      // 3. Calcula total de ovos e cria item do pedido (relacionando com Lote)
+      const totalOvos = data.itens.reduce((acc, item) => acc + (item.quantidadeBandejas * parseInt(item.tipo)), 0)
+
+      if (totalOvos > 0) {
+        await tx.itemPedido.create({
+          data: {
+            pedidoId: pedido.id,
+            loteInternoId: data.loteInternoId,
+            quantidade: totalOvos
+          }
+        })
+
+        // 4. Desconta do estoque do Lote Interno
+        await tx.loteInterno.update({
+          where: { id: data.loteInternoId },
+          data: {
+            estoqueDisponivel: {
+              decrement: totalOvos
+            }
+          }
+        })
+      }
+
+      // 5. Gera a Conta a Receber no Financeiro
+      const validade = new Date()
+      validade.setDate(validade.getDate() + 30) // Validade 30 dias
+
+      await tx.financeiro.create({
+        data: {
+          tipo: "RECEBER",
+          valor: data.valorTotal,
+          status: "PENDENTE",
+          dataVencimento: validade,
+          pedidoId: pedido.id
+        }
+      })
+
+      // 6. Tentar descontar insumos (Bônus aprovado no plano)
+      for (const item of data.itens) {
+        if (item.quantidadeBandejas > 0) {
+           let termo = ""
+           if (item.tipo === '12') termo = "12 ovos"
+           if (item.tipo === '15') termo = "Tampa de 15"
+           
+           if (termo) {
+             const insumo = await tx.insumo.findFirst({
+               where: { nome: { contains: termo } }
+             })
+             if (insumo) {
+               await tx.insumo.update({
+                 where: { id: insumo.id },
+                 data: { estoqueAtual: { decrement: item.quantidadeBandejas } }
+               })
+             }
+           }
+        }
+      }
+
+      return pedido
     })
-    
+
     revalidatePath("/logistica")
-    return { success: true, count: atualizados.count }
+    revalidatePath("/financeiro")
+    revalidatePath("/producao")
+    return { success: true, data: result }
   } catch (error) {
-    console.error("Erro ao iniciar carregamento:", error)
-    return { success: false, error: "Falha ao iniciar carregamento." }
+    console.error("Erro ao registrar carregamento:", error)
+    return { success: false, error: "Falha ao registrar carregamento e gerar faturamento." }
   }
 }

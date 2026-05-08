@@ -35,7 +35,7 @@ export default async function LogisticaPage() {
           <h1 className="text-3xl font-bold tracking-tight">Logística e Expedição</h1>
           <p className="text-muted-foreground">Gerencie a separação de pedidos B2B e alocação de estoque.</p>
         </div>
-        <BotaoCarregamento />
+        <BotaoCarregamento lotes={estoqueLotes} />
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
