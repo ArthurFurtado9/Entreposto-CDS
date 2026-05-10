@@ -161,11 +161,58 @@ enum FinanceiroStatus {
   CANCELADO
 }
 
+enum UserRole {
+  ADMIN
+  OPERADOR
+  FINANCEIRO
+}
+
 model User {
   id        String   @id @default(cuid())
   name      String
   email     String   @unique
   password  String
+  role      UserRole @default(ADMIN)
+  active    Boolean  @default(true)
+  auditLogs AuditLog[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model CompanyProfile {
+  id                String   @id @default(cuid())
+  razaoSocial       String
+  cnpj              String   @unique
+  inscricaoEstadual String?
+  endereco          String?
+  telefone          String?
+  email             String?
+  logoUrl           String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model ExpenseCategory {
+  id        String   @id @default(cuid())
+  nome      String   @unique
+  ativo     Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model PaymentCondition {
+  id        String   @id @default(cuid())
+  nome      String   @unique
+  dias      Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  acao      String
+  recurso   String
+  createdAt DateTime @default(now())
 }

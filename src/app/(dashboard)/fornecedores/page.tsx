@@ -19,8 +19,13 @@ import { EditarFornecedorModal } from "./editar-fornecedor-modal"
 import { Building2, Phone, Mail, Calendar } from "lucide-react"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
+import { getCurrentUser } from "@/lib/auth-utils"
+import { BotaoExcluirFornecedor } from "./botao-excluir-fornecedor"
 
 export default async function FornecedoresPage() {
+  const user = await getCurrentUser()
+  const isAdmin = user?.role === "ADMIN"
+
   const result = await getFornecedores()
   const fornecedores = (result.success && result.data) ? result.data : []
 
@@ -86,7 +91,10 @@ export default async function FornecedoresPage() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <EditarFornecedorModal fornecedor={f} />
+                      <div className="flex items-center gap-1">
+                        <EditarFornecedorModal fornecedor={f} />
+                        {isAdmin && <BotaoExcluirFornecedor id={f.id} />}
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))

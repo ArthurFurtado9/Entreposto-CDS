@@ -2,6 +2,7 @@
 
 import prisma from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
+import { requireAdmin } from "@/lib/auth-utils"
 
 export async function getLotesAguardandoTriagem() {
   try {
@@ -79,5 +80,51 @@ export async function finalizarTriagem(data: {
   } catch (error) {
     console.error("Erro ao finalizar triagem:", error)
     return { success: false, error: "Falha ao processar triagem do lote." }
+  }
+}
+
+export async function getLotesTriados() {
+  try {
+    const lotes = await prisma.loteEntrada.findMany({
+      where: { status: "TRIADO" },
+      include: { fornecedor: true },
+      orderBy: { dataRecebimento: "desc" }
+    })
+    return { success: true, data: lotes }
+  } catch (error) {
+    console.error("Erro ao buscar lotes triados:", error)
+    return { success: false, error: "Falha ao buscar lotes triados." }
+  }
+}
+
+export async function excluirLote(id: string) {
+  try {
+    await requireAdmin()
+    
+    // Deletar financeiro atrelado ao LoteEntrada
+    await prisma.financeiro.deleteMany({ where: { loteEntradaId: id } })
+    
+    // Deletar usos de insumos atrelados ao LoteInterno
+    const lotesInternos = await prisma.loteInterno.findMany({ where: { loteEntradaId: id } })
+    for (const li of lotesInternos) {
+       await prisma.usoInsumo.deleteMany({ where: { loteInternoId: li.id } })
+       await prisma.itemPedido.deleteMany({ where: { loteInternoId: li.id } }) // cuidado: isso apaga itens de pedidos!
+    }
+    
+    // Deletar LoteInterno
+    await prisma.loteInterno.deleteMany({ where: { loteEntradaId: id } })
+    
+    // Deletar LoteEntrada
+    await prisma.loteEntrada.delete({ where: { id } })
+    
+    revalidatePath("/ovoscopia")
+    revalidatePath("/producao")
+    revalidatePath("/financeiro")
+    revalidatePath("/logistica")
+    
+    return { success: true }
+  } catch (error) {
+    console.error("Erro ao excluir lote:", error)
+    return { success: false, error: "Falha ao excluir lote. Verifique dependências (pedidos)." }
   }
 }

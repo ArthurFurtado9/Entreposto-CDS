@@ -38,7 +38,7 @@ export async function login(data: FormData) {
     }
 
     // Criar JWT
-    const token = await new SignJWT({ userId: user.id, name: user.name, email: user.email })
+    const token = await new SignJWT({ userId: user.id, name: user.name, email: user.email, role: user.role })
       .setProtectedHeader({ alg: 'HS256' })
       .setExpirationTime('24h')
       .sign(JWT_SECRET)

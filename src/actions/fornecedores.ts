@@ -2,6 +2,7 @@
 
 import prisma from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
+import { requireAdmin } from "@/lib/auth-utils"
 
 export async function getFornecedores() {
   try {
@@ -149,5 +150,18 @@ export async function cadastrarInsumosPreEstabelecidos() {
   } catch (error) {
     console.error("Erro ao cadastrar insumos base:", error)
     return { success: false, error: "Falha ao cadastrar insumos." }
+  }
+}
+
+export async function excluirFornecedor(id: string) {
+  try {
+    await requireAdmin()
+    await prisma.fornecedor.delete({ where: { id } })
+    revalidatePath("/fornecedores")
+    revalidatePath("/recebimento")
+    return { success: true }
+  } catch (error) {
+    console.error("Erro ao excluir fornecedor:", error)
+    return { success: false, error: "Falha ao excluir fornecedor. Verifique se existem lotes atrelados a ele." }
   }
 }

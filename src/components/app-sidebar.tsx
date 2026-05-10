@@ -140,6 +140,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <SidebarMenuButton
               tooltip="Configurações"
               className="rounded-lg text-slate-400 hover:bg-slate-800 hover:text-slate-200 h-10"
+              render={<a href="/configuracoes" />}
             >
               <Settings className="size-4" />
               <span className="text-sm">Configurações</span>

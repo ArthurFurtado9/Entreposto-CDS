@@ -2,6 +2,7 @@
 
 import prisma from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
+import { requireAdmin } from "@/lib/auth-utils"
 
 export async function getPedidosLogistica() {
   try {
@@ -197,6 +198,35 @@ export async function criarCliente(data: { nome: string; cnpj: string }) {
   } catch (error) {
     console.error("Erro ao criar cliente:", error)
     return { success: false, error: "Falha ao criar cliente." }
+  }
+}
+
+export async function excluirPedido(id: string) {
+  try {
+    await requireAdmin()
+    
+    // Deletar financeiro atrelado
+    await prisma.financeiro.deleteMany({ where: { pedidoId: id } })
+    
+    // Restituir estoque
+    const itens = await prisma.itemPedido.findMany({ where: { pedidoId: id } })
+    for (const item of itens) {
+       await prisma.loteInterno.update({
+         where: { id: item.loteInternoId },
+         data: { estoqueDisponivel: { increment: item.quantidade } }
+       })
+    }
+    
+    // Deletar itens e o pedido
+    await prisma.itemPedido.deleteMany({ where: { pedidoId: id } })
+    await prisma.pedido.delete({ where: { id } })
+    
+    revalidatePath("/logistica")
+    revalidatePath("/financeiro")
+    return { success: true }
+  } catch (error) {
+    console.error("Erro ao excluir pedido:", error)
+    return { success: false, error: "Falha ao excluir pedido." }
   }
 }
 

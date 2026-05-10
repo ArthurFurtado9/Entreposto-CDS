@@ -21,8 +21,13 @@ import { BotaoCarregamento } from "./botao-carregamento"
 import { NovoClienteModal } from "./novo-cliente-modal"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
+import { getCurrentUser } from "@/lib/auth-utils"
+import { BotaoExcluirPedido } from "./botao-excluir-pedido"
 
 export default async function LogisticaPage() {
+  const user = await getCurrentUser()
+  const isAdmin = user?.role === "ADMIN"
+
   const resultPedidos = await getPedidosLogistica()
   const resultLotes = await getLotesDisponiveis()
   const resultClientes = await getClientes()
@@ -59,6 +64,7 @@ export default async function LogisticaPage() {
                   <TableHead>Cliente</TableHead>
                   <TableHead>Qtd (Ovos)</TableHead>
                   <TableHead>Status</TableHead>
+                  {isAdmin && <TableHead className="w-[80px]">Ações</TableHead>}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -77,6 +83,11 @@ export default async function LogisticaPage() {
                         {p.status}
                       </Badge>
                     </TableCell>
+                    {isAdmin && (
+                      <TableCell>
+                        <BotaoExcluirPedido id={p.id} />
+                      </TableCell>
+                    )}
                   </TableRow>
                 ))}
               </TableBody>
