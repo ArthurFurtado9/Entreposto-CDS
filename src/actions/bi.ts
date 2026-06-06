@@ -1,9 +1,11 @@
 "use server"
 
 import prisma from "@/lib/prisma"
+import { requireAuth } from "@/lib/auth-utils"
 
 export async function getBIData() {
   try {
+    await requireAuth()
     // Ranking de Qualidade (Rendimento %)
     const fornecedores = await prisma.fornecedor.findMany({
       include: {

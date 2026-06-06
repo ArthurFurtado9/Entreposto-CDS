@@ -1,9 +1,11 @@
 "use server"
 
 import prisma from "@/lib/prisma"
+import { requireAuth } from "@/lib/auth-utils"
 
 export async function getDashboardData() {
   try {
+    await requireAuth()
     const hoje = new Date()
     const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1)
 
@@ -71,6 +73,81 @@ export async function getDashboardData() {
     .sort((a, b) => b.rawYield - a.rawYield)
     .slice(0, 3)
 
+    // Volume de ovos processados nos últimos 30 dias (lotes triados)
+    const trintaDiasAtras = new Date()
+    trintaDiasAtras.setDate(trintaDiasAtras.getDate() - 30)
+
+    const lotesTrintaDias = await prisma.loteEntrada.findMany({
+      where: {
+        status: "TRIADO",
+        updatedAt: { gte: trintaDiasAtras }
+      },
+      select: {
+        quantidadeAproveitada: true,
+        updatedAt: true
+      },
+      orderBy: {
+        updatedAt: "asc"
+      }
+    })
+
+    // Agrupar por data (dia/mês)
+    const volumePorDia: { [key: string]: number } = {}
+    for (let i = 29; i >= 0; i--) {
+      const d = new Date()
+      d.setDate(d.getDate() - i)
+      const label = d.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" })
+      volumePorDia[label] = 0
+    }
+
+    for (const lote of lotesTrintaDias) {
+      const label = lote.updatedAt.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" })
+      if (volumePorDia[label] !== undefined) {
+        volumePorDia[label] += lote.quantidadeAproveitada
+      }
+    }
+
+    const producaoTrintaDias = Object.entries(volumePorDia).map(([date, volume]) => ({
+      date,
+      volume
+    }))
+
+    // Faturamento nos últimos 30 dias (tipo: RECEBER)
+    const financeiroReceberTrintaDias = await prisma.financeiro.findMany({
+      where: {
+        tipo: "RECEBER",
+        createdAt: { gte: trintaDiasAtras }
+      },
+      select: {
+        valor: true,
+        createdAt: true
+      },
+      orderBy: {
+        createdAt: "asc"
+      }
+    })
+
+    // Agrupar por data (dia/mês)
+    const faturamentoPorDia: { [key: string]: number } = {}
+    for (let i = 29; i >= 0; i--) {
+      const d = new Date()
+      d.setDate(d.getDate() - i)
+      const label = d.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" })
+      faturamentoPorDia[label] = 0
+    }
+
+    for (const f of financeiroReceberTrintaDias) {
+      const label = f.createdAt.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" })
+      if (faturamentoPorDia[label] !== undefined) {
+        faturamentoPorDia[label] += Number(f.valor)
+      }
+    }
+
+    const faturamentoTrintaDias = Object.entries(faturamentoPorDia).map(([date, valor]) => ({
+      date,
+      valor
+    }))
+
     return {
       success: true,
       data: {
@@ -79,7 +156,9 @@ export async function getDashboardData() {
         rendimentoMedio,
         insumosCriticosCount: insumosCriticosFiltered.length,
         insumosCriticosNomes: insumosCriticosNomes || "Nenhum insumo crítico",
-        ranking
+        ranking,
+        producaoTrintaDias,
+        faturamentoTrintaDias
       }
     }
   } catch (error) {

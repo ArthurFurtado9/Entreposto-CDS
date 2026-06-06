@@ -24,7 +24,7 @@ export async function getCurrentUser() {
         id: true,
         name: true,
         email: true,
-        role: true,
+        role: true, 
         active: true,
       },
     })
@@ -44,6 +44,30 @@ export async function requireAdmin() {
 
   if (user.role !== "ADMIN") {
     throw new Error("Acesso negado. Apenas administradores podem acessar esta funcionalidade.")
+  }
+
+  return user
+}
+
+export async function requireAuth() {
+  const user = await getCurrentUser()
+
+  if (!user) {
+    throw new Error("Não autenticado.")
+  }
+
+  if (!user.active) {
+    throw new Error("Usuário inativo. Entre em contato com o administrador.")
+  }
+
+  return user
+}
+
+export async function requireRole(allowedRoles: ("ADMIN" | "OPERADOR" | "FINANCEIRO")[]) {
+  const user = await requireAuth()
+
+  if (!allowedRoles.includes(user.role)) {
+    throw new Error("Acesso negado. Você não possui privilégios suficientes para acessar esta funcionalidade.")
   }
 
   return user

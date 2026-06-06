@@ -53,11 +53,6 @@ const data = {
       icon: ClipboardCheck,
     },
     {
-      title: "Produção e Insumos",
-      url: "/producao",
-      icon: Package,
-    },
-    {
       title: "Logística (Picking)",
       url: "/logistica",
       icon: Truck,
@@ -66,6 +61,11 @@ const data = {
       title: "Financeiro",
       url: "/financeiro",
       icon: CircleDollarSign,
+    },
+    {
+      title: "Produção e Insumos",
+      url: "/producao",
+      icon: Package,
     },
     {
       title: "Relatórios / BI",

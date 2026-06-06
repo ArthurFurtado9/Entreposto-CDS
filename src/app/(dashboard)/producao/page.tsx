@@ -2,6 +2,8 @@ import { getInsumos } from "@/actions/producao"
 import { InsumosClient } from "./insumos-client"
 import { NovoInsumoModal } from "./novo-insumo-modal"
 
+export const dynamic = "force-dynamic"
+
 export default async function ProducaoPage() {
   const result = await getInsumos()
   const insumos = result.success ? (result.data as any[]) : []

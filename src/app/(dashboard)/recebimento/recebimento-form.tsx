@@ -23,6 +23,7 @@ interface RecebimentoFormProps {
 
 export function RecebimentoForm({ fornecedores }: RecebimentoFormProps) {
   const [loading, setLoading] = useState(false)
+  const [formKey, setFormKey] = useState(0)
   const router = useRouter()
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -33,15 +34,16 @@ export function RecebimentoForm({ fornecedores }: RecebimentoFormProps) {
     const data = {
       fornecedorId: formData.get("fornecedorId") as string,
       quantidadeOriginal: parseInt(formData.get("quantidade") as string),
-      validadeOriginal: new Date(formData.get("validade") as string),
+      validadeOriginal: formData.get("validade") as string,
       valorBandeja: parseFloat(formData.get("valorBandeja") as string),
     }
 
     try {
       const result = await registrarRecebimentoLote(data)
       if (result.success) {
-        toast.success("Lote recebido com sucesso! Encaminhado para Ovoscopia.")
-        router.push("/ovoscopia")
+        toast.success("Lote recebido com sucesso! Aguardando Ovoscopia.")
+        setFormKey(prev => prev + 1)
+        router.refresh()
       } else {
         toast.error(result.error || "Erro ao registrar recebimento.")
       }
@@ -53,8 +55,8 @@ export function RecebimentoForm({ fornecedores }: RecebimentoFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <Card className="border-none shadow-sm bg-white max-w-2xl">
+    <form key={formKey} onSubmit={handleSubmit} className="w-full max-w-2xl">
+      <Card className="border-none shadow-sm bg-white">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Truck className="h-5 w-5 text-slate-900" />

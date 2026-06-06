@@ -5,6 +5,7 @@ import bcrypt from "bcryptjs"
 import { SignJWT } from "jose"
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
+import { z } from "zod"
 
 if (!process.env.JWT_SECRET) {
   throw new Error("JWT_SECRET não definido nas variáveis de ambiente.")
@@ -12,14 +13,28 @@ if (!process.env.JWT_SECRET) {
 
 const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET)
 
-export async function login(data: FormData) {
-  const email = data.get("email") as string
-  const password = data.get("password") as string
+const loginSchema = z.object({
+  email: z.string().email("Formato de e-mail inválido."),
+  password: z.string().min(1, "Preencha todos os campos."),
+})
 
-  if (!email || !password) {
-    return { success: false, error: "Preencha todos os campos." }
+const registerSchema = z.object({
+  name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres."),
+  email: z.string().email("Formato de e-mail inválido."),
+  password: z.string().min(6, "A senha deve ter pelo menos 6 caracteres."),
+  inviteCode: z.string().min(1, "Código de convite é obrigatório."),
+})
+
+export async function login(data: FormData) {
+  const emailInput = data.get("email") as string
+  const passwordInput = data.get("password") as string
+
+  const validation = loginSchema.safeParse({ email: emailInput, password: passwordInput })
+  if (!validation.success) {
+    return { success: false, error: validation.error.issues[0].message }
   }
 
+  const { email, password } = validation.data
   let shouldRedirect = false
 
   try {
@@ -35,6 +50,10 @@ export async function login(data: FormData) {
 
     if (!isPasswordValid) {
       return { success: false, error: "Credenciais inválidas." }
+    }
+
+    if (!user.active) {
+      return { success: false, error: "Conta inativa. Entre em contato com o administrador." }
     }
 
     // Criar JWT
@@ -56,7 +75,7 @@ export async function login(data: FormData) {
     shouldRedirect = true
   } catch (error) {
     console.error("Erro no login:", error)
-    return { success: false, error: "Erro de conexão com o banco de dados. Verifique a DATABASE_URL." }
+    return { success: false, error: "Ocorreu um erro interno no servidor." }
   }
 
   // redirect() PRECISA ficar FORA do try/catch porque lança um erro NEXT_REDIRECT
@@ -67,17 +86,25 @@ export async function login(data: FormData) {
 }
 
 export async function register(data: FormData) {
-  const name = data.get("name") as string
-  const email = data.get("email") as string
-  const password = data.get("password") as string
-  const inviteCode = data.get("inviteCode") as string
+  const nameInput = data.get("name") as string
+  const emailInput = data.get("email") as string
+  const passwordInput = data.get("password") as string
+  const inviteCodeInput = data.get("inviteCode") as string
 
-  if (!name || !email || !password || !inviteCode) {
-    return { success: false, error: "Preencha todos os campos." }
+  const validation = registerSchema.safeParse({
+    name: nameInput,
+    email: emailInput,
+    password: passwordInput,
+    inviteCode: inviteCodeInput,
+  })
+
+  if (!validation.success) {
+    return { success: false, error: validation.error.issues[0].message }
   }
 
+  const { name, email, password, inviteCode } = validation.data
+
   // Validar código de convite contra a variável de ambiente
-  // Certifique-se de definir INVITE_CODE="SuaSenhaAqui" no .env
   if (inviteCode !== process.env.INVITE_CODE) {
     return { success: false, error: "Código de convite inválido." }
   }
@@ -104,7 +131,7 @@ export async function register(data: FormData) {
     return { success: true }
   } catch (error) {
     console.error("Erro no registro:", error)
-    return { success: false, error: "Erro de conexão com o banco de dados. Verifique a DATABASE_URL." }
+    return { success: false, error: "Ocorreu um erro interno no servidor." }
   }
 }
 

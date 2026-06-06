@@ -12,6 +12,10 @@ import {
   AlertTriangle
 } from "lucide-react"
 import { getDashboardData } from "@/actions/dashboard"
+import { ProducaoChart } from "./producao-chart"
+import { FaturamentoChart } from "./faturamento-chart"
+
+export const dynamic = "force-dynamic"
 
 export default async function DashboardPage() {
   const result = await getDashboardData()
@@ -21,7 +25,9 @@ export default async function DashboardPage() {
     rendimentoMedio: 0,
     insumosCriticosCount: 0,
     insumosCriticosNomes: "Nenhum insumo crítico",
-    ranking: []
+    ranking: [],
+    producaoTrintaDias: [],
+    faturamentoTrintaDias: []
   }
 
   return (
@@ -98,32 +104,39 @@ export default async function DashboardPage() {
         </Card>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <Card className="md:col-span-1 lg:col-span-4 glass-panel hover-lift">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <Card className="glass-panel hover-lift">
           <CardHeader>
             <CardTitle className="text-base font-semibold text-slate-900">Visão Geral de Produção</CardTitle>
             <CardDescription className="text-sm text-slate-500">
               Volume de ovos processados nos últimos 30 dias.
             </CardDescription>
           </CardHeader>
-          <CardContent className="h-[300px] flex items-center justify-center">
-            <div className="text-center">
-              <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-3">
-                <TrendingUp className="w-5 h-5 text-slate-400" />
-              </div>
-              <p className="text-sm text-slate-400">Gráfico em construção</p>
-            </div>
+          <CardContent className="h-[300px]">
+            <ProducaoChart data={data.producaoTrintaDias} />
           </CardContent>
         </Card>
 
-        <Card className="md:col-span-1 lg:col-span-3 glass-panel hover-lift">
+        <Card className="glass-panel hover-lift">
+          <CardHeader>
+            <CardTitle className="text-base font-semibold text-slate-900">Faturamento Diário</CardTitle>
+            <CardDescription className="text-sm text-slate-500">
+              Valor faturado nos últimos 30 dias.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="h-[300px]">
+            <FaturamentoChart data={data.faturamentoTrintaDias} />
+          </CardContent>
+        </Card>
+
+        <Card className="glass-panel hover-lift">
           <CardHeader>
             <CardTitle className="text-base font-semibold text-slate-900">Ranking de Qualidade</CardTitle>
             <CardDescription className="text-sm text-slate-500">
               Melhores granjas (menor % de quebra).
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="h-[300px] flex flex-col justify-center">
             <div className="space-y-3">
               {data.ranking.length === 0 ? (
                 <div className="text-center py-8">

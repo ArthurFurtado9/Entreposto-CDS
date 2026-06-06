@@ -2,10 +2,31 @@
 
 import prisma from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
-import { requireAdmin } from "@/lib/auth-utils"
+import { requireAdmin, requireRole } from "@/lib/auth-utils"
+import { z } from "zod"
+
+const itemCarregamentoSchema = z.object({
+  tipo: z.enum(['6', '12', '15']),
+  quantidadeBandejas: z.number().int().nonnegative("A quantidade de bandejas não pode ser negativa."),
+  precoBandeja: z.number().nonnegative("O preço da bandeja não pode ser negativo."),
+})
+
+const registrarCarregamentoSchema = z.object({
+  loteIds: z.array(z.string()).min(1, "Deve selecionar pelo menos um lote interno."),
+  nomeCliente: z.string().min(1, "Nome do cliente é obrigatório."),
+  itens: z.array(itemCarregamentoSchema).min(1, "Deve carregar pelo menos um item."),
+  valorTotal: z.number().nonnegative("O valor total não pode ser negativo."),
+})
+
+const criarClienteSchema = z.object({
+  nome: z.string().min(2, "Nome do cliente deve ter pelo menos 2 caracteres."),
+  cnpj: z.string().optional().nullable().or(z.literal("")),
+})
 
 export async function getPedidosLogistica() {
   try {
+    await requireRole(["ADMIN", "OPERADOR"])
+
     const pedidos = await prisma.pedido.findMany({
       where: {
         status: {
@@ -34,14 +55,18 @@ export async function getPedidosLogistica() {
     })
 
     return { success: true, data: formatados }
-  } catch (error) {
-    console.error("Erro ao buscar pedidos:", error)
-    return { success: false, error: "Falha ao buscar pedidos." }
+  } catch (error: any) {
+    if (error.message !== "Não autenticado." && !error.message?.includes("Acesso negado")) {
+      console.error("Erro ao buscar pedidos:", error)
+    }
+    return { success: false, error: error.message || "Falha ao buscar pedidos." }
   }
 }
 
 export async function getLotesDisponiveis() {
   try {
+    await requireRole(["ADMIN", "OPERADOR"])
+
     const lotes = await prisma.loteInterno.findMany({
       where: {
         estoqueDisponivel: { gt: 0 }
@@ -55,44 +80,46 @@ export async function getLotesDisponiveis() {
       id: l.id,
       ovos: l.estoqueDisponivel,
       validade: l.validadeSugerida.toISOString(),
-      status: index === 0 ? "FIFO" : "DISPONIVEL" // O primeiro é o FIFO, ou podemos ter logica mais avançada
+      status: index === 0 ? "FIFO" : "DISPONIVEL"
     }))
 
     return { success: true, data: formatados }
-  } catch (error) {
-    console.error("Erro ao buscar lotes:", error)
-    return { success: false, error: "Falha ao buscar lotes." }
+  } catch (error: any) {
+    if (error.message !== "Não autenticado." && !error.message?.includes("Acesso negado")) {
+      console.error("Erro ao buscar lotes:", error)
+    }
+    return { success: false, error: error.message || "Falha ao buscar lotes." }
   }
 }
 
 export async function getClientes() {
   try {
+    await requireRole(["ADMIN", "OPERADOR"])
+
     const clientes = await prisma.cliente.findMany({
       orderBy: { nome: 'asc' },
       select: { id: true, nome: true }
     })
     return { success: true, data: clientes }
-  } catch (error) {
-    console.error("Erro ao buscar clientes:", error)
-    return { success: false, error: "Falha ao buscar clientes." }
+  } catch (error: any) {
+    if (error.message !== "Não autenticado." && !error.message?.includes("Acesso negado")) {
+      console.error("Erro ao buscar clientes:", error)
+    }
+    return { success: false, error: error.message || "Falha ao buscar clientes." }
   }
 }
 
-interface ItemCarregamento {
-  tipo: '6' | '12' | '15'
-  quantidadeBandejas: number
-  precoBandeja: number
-}
-
-interface RegistrarCarregamentoInput {
-  loteInternoId: string
-  nomeCliente: string
-  itens: ItemCarregamento[]
-  valorTotal: number
-}
-
-export async function registrarCarregamento(data: RegistrarCarregamentoInput) {
+export async function registrarCarregamento(rawData: unknown) {
   try {
+    await requireRole(["ADMIN", "OPERADOR"])
+
+    const validated = registrarCarregamentoSchema.safeParse(rawData)
+    if (!validated.success) {
+      return { success: false, error: validated.error.issues[0].message }
+    }
+
+    const data = validated.data
+
     const result = await prisma.$transaction(async (tx) => {
       // 1. Busca ou cria o cliente
       let cliente = await tx.cliente.findFirst({
@@ -114,27 +141,66 @@ export async function registrarCarregamento(data: RegistrarCarregamentoInput) {
         }
       })
 
-      // 3. Calcula total de ovos e cria item do pedido (relacionando com Lote)
+      // 3. Calcula total de ovos e valida correspondência com os lotes
       const totalOvos = data.itens.reduce((acc, item) => acc + (item.quantidadeBandejas * parseInt(item.tipo)), 0)
 
-      if (totalOvos > 0) {
-        await tx.itemPedido.create({
-          data: {
-            pedidoId: pedido.id,
-            loteInternoId: data.loteInternoId,
-            quantidade: totalOvos
-          }
-        })
+      if (totalOvos <= 0) {
+        throw new Error("Quantidade total de ovos deve ser maior que zero.")
+      }
 
-        // 4. Desconta do estoque do Lote Interno
-        await tx.loteInterno.update({
-          where: { id: data.loteInternoId },
-          data: {
-            estoqueDisponivel: {
-              decrement: totalOvos
-            }
+      // Buscar os lotes selecionados e ordenar por validade (FIFO)
+      const lotesInternos = await tx.loteInterno.findMany({
+        where: {
+          id: {
+            in: data.loteIds
           }
-        })
+        },
+        orderBy: {
+          validadeSugerida: "asc"
+        }
+      })
+
+      if (lotesInternos.length !== data.loteIds.length) {
+        throw new Error("Um ou mais lotes internos selecionados não foram encontrados.")
+      }
+
+      const estoqueTotalDisponivel = lotesInternos.reduce((acc, l) => acc + l.estoqueDisponivel, 0)
+      if (estoqueTotalDisponivel < totalOvos) {
+        throw new Error(`Estoque insuficiente nos lotes selecionados. Disponível: ${estoqueTotalDisponivel}, Solicitado: ${totalOvos}`)
+      }
+
+      // Processar e consumir os lotes sequencialmente
+      let restanteAAlocar = totalOvos
+      for (const lote of lotesInternos) {
+        if (restanteAAlocar <= 0) break
+
+        const consumo = Math.min(lote.estoqueDisponivel, restanteAAlocar)
+        if (consumo > 0) {
+          // Criar item do pedido para este lote
+          await tx.itemPedido.create({
+            data: {
+              pedidoId: pedido.id,
+              loteInternoId: lote.id,
+              quantidade: consumo
+            }
+          })
+
+          // Descontar do estoque do Lote Interno
+          await tx.loteInterno.update({
+            where: { id: lote.id },
+            data: {
+              estoqueDisponivel: {
+                decrement: consumo
+              }
+            }
+          })
+
+          restanteAAlocar -= consumo
+        }
+      }
+
+      if (restanteAAlocar > 0) {
+        throw new Error("Falha inesperada ao alocar a quantidade de ovos nos lotes.")
       }
 
       // 5. Gera a Conta a Receber no Financeiro
@@ -151,7 +217,7 @@ export async function registrarCarregamento(data: RegistrarCarregamentoInput) {
         }
       })
 
-      // 6. Tentar descontar insumos (Bônus aprovado no plano)
+      // 6. Tentar descontar insumos
       for (const item of data.itens) {
         if (item.quantidadeBandejas > 0) {
            let termo = ""
@@ -163,6 +229,10 @@ export async function registrarCarregamento(data: RegistrarCarregamentoInput) {
                where: { nome: { contains: termo } }
              })
              if (insumo) {
+               // Verifica se há insumo suficiente antes de decrementar
+               if (insumo.estoqueAtual < item.quantidadeBandejas) {
+                 throw new Error(`Estoque insuficiente do insumo '${insumo.nome}'. Disponível: ${insumo.estoqueAtual}`)
+               }
                await tx.insumo.update({
                  where: { id: insumo.id },
                  data: { estoqueAtual: { decrement: item.quantidadeBandejas } }
@@ -179,14 +249,22 @@ export async function registrarCarregamento(data: RegistrarCarregamentoInput) {
     revalidatePath("/financeiro")
     revalidatePath("/producao")
     return { success: true, data: result }
-  } catch (error) {
+  } catch (error: any) {
     console.error("Erro ao registrar carregamento:", error)
-    return { success: false, error: "Falha ao registrar carregamento e gerar faturamento." }
+    return { success: false, error: error.message || "Falha ao registrar carregamento e gerar faturamento." }
   }
 }
 
-export async function criarCliente(data: { nome: string; cnpj: string }) {
+export async function criarCliente(rawData: unknown) {
   try {
+    await requireRole(["ADMIN", "OPERADOR"])
+
+    const validated = criarClienteSchema.safeParse(rawData)
+    if (!validated.success) {
+      return { success: false, error: validated.error.issues[0].message }
+    }
+
+    const data = validated.data
     const cliente = await prisma.cliente.create({
       data: {
         nome: data.nome,
@@ -195,15 +273,19 @@ export async function criarCliente(data: { nome: string; cnpj: string }) {
     })
     revalidatePath("/logistica")
     return { success: true, data: cliente }
-  } catch (error) {
+  } catch (error: any) {
     console.error("Erro ao criar cliente:", error)
-    return { success: false, error: "Falha ao criar cliente." }
+    return { success: false, error: "Falha ao criar cliente. CNPJ ou Nome já cadastrado." }
   }
 }
 
 export async function excluirPedido(id: string) {
   try {
     await requireAdmin()
+
+    if (!id || typeof id !== "string") {
+      return { success: false, error: "ID de pedido inválido." }
+    }
     
     // Deletar financeiro atrelado
     await prisma.financeiro.deleteMany({ where: { pedidoId: id } })
@@ -224,9 +306,8 @@ export async function excluirPedido(id: string) {
     revalidatePath("/logistica")
     revalidatePath("/financeiro")
     return { success: true }
-  } catch (error) {
+  } catch (error: any) {
     console.error("Erro ao excluir pedido:", error)
-    return { success: false, error: "Falha ao excluir pedido." }
+    return { success: false, error: error.message || "Falha ao excluir pedido." }
   }
 }
-

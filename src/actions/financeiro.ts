@@ -2,10 +2,12 @@
 
 import prisma from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
-import { FinanceiroStatus } from "@prisma/client"
+import { requireRole } from "@/lib/auth-utils"
 
 export async function getContasAPagar() {
   try {
+    await requireRole(["ADMIN", "FINANCEIRO"])
+
     const contas = await prisma.financeiro.findMany({
       where: {
         tipo: "PAGAR",
@@ -23,14 +25,20 @@ export async function getContasAPagar() {
     })
 
     return { success: true, data: contas }
-  } catch (error) {
+  } catch (error: any) {
     console.error("Erro ao buscar contas a pagar:", error)
-    return { success: false, error: "Falha ao buscar contas a pagar." }
+    return { success: false, error: error.message || "Falha ao buscar contas a pagar." }
   }
 }
 
 export async function darBaixaConta(id: string) {
   try {
+    await requireRole(["ADMIN", "FINANCEIRO"])
+
+    if (!id || typeof id !== "string") {
+      return { success: false, error: "ID de conta inválido." }
+    }
+
     await prisma.financeiro.update({
       where: { id },
       data: {
@@ -41,14 +49,16 @@ export async function darBaixaConta(id: string) {
 
     revalidatePath("/financeiro")
     return { success: true }
-  } catch (error) {
+  } catch (error: any) {
     console.error("Erro ao dar baixa na conta:", error)
-    return { success: false, error: "Falha ao processar o pagamento." }
+    return { success: false, error: error.message || "Falha ao processar o pagamento." }
   }
 }
 
 export async function getContasAReceber() {
   try {
+    await requireRole(["ADMIN", "FINANCEIRO"])
+
     const contas = await prisma.financeiro.findMany({
       where: {
         tipo: "RECEBER",
@@ -66,8 +76,8 @@ export async function getContasAReceber() {
     })
 
     return { success: true, data: contas }
-  } catch (error) {
+  } catch (error: any) {
     console.error("Erro ao buscar contas a receber:", error)
-    return { success: false, error: "Falha ao buscar contas a receber." }
+    return { success: false, error: error.message || "Falha ao buscar contas a receber." }
   }
 }

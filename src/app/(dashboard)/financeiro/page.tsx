@@ -18,6 +18,8 @@ import { ContasApagarTable } from "./contas-apagar-table"
 import { ContasAReceberTable } from "./contas-areceber-table"
 import { Badge } from "@/components/ui/badge"
 
+export const dynamic = "force-dynamic"
+
 export default async function FinanceiroPage() {
   const resultPagar = await getContasAPagar()
   const contasAPagar = (resultPagar.success && resultPagar.data) ? resultPagar.data : []
