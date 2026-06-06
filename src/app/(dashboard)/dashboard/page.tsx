@@ -14,6 +14,7 @@ import {
 import { getDashboardData } from "@/actions/dashboard"
 import { ProducaoChart } from "./producao-chart"
 import { FaturamentoChart } from "./faturamento-chart"
+import { OnboardingCards } from "./onboarding-cards"
 
 export const dynamic = "force-dynamic"
 
@@ -36,6 +37,8 @@ export default async function DashboardPage() {
         <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">Dashboard</h1>
         <p className="text-sm text-slate-500 mt-1">Bem-vindo ao centro de controle do Entreposto Serra.</p>
       </div>
+
+      <OnboardingCards />
 
       {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
