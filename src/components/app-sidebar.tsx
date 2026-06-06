@@ -88,14 +88,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <div className="absolute inset-0 bg-slate-900 -z-10" />
 
       <SidebarHeader className="!bg-transparent">
-        <div className="flex items-center gap-3 px-2 py-4">
+        <div className="flex items-center gap-3 px-2 py-4 group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:justify-center">
           <motion.div 
             whileHover={{ scale: 1.05, rotate: 5 }}
-            className="flex aspect-square size-9 items-center justify-center rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-600/30"
+            className="flex aspect-square size-9 items-center justify-center rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-600/30 group-data-[collapsible=icon]:size-8"
           >
-            <Package className="size-5" />
+            <Package className="size-5 group-data-[collapsible=icon]:size-4" />
           </motion.div>
-          <div className="grid flex-1 text-left text-sm leading-tight">
+          <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
             <span className="truncate font-bold text-white">Entreposto</span>
             <span className="truncate text-[10px] uppercase tracking-wider text-slate-400 font-semibold">ERP Caipira</span>
           </div>
@@ -108,7 +108,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             Menu Principal
           </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu className="gap-1 px-2">
+            <SidebarMenu className="gap-1 px-2 group-data-[collapsible=icon]:px-0">
               {data.navMain.map((item) => {
                 const isActive = pathname?.startsWith(item.url)
                 return (
@@ -135,7 +135,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarContent>
 
       <SidebarFooter className="!bg-transparent border-t border-slate-800 mt-auto">
-        <SidebarMenu className="px-2">
+        <SidebarMenu className="px-2 group-data-[collapsible=icon]:px-0">
           <SidebarMenuItem>
             <SidebarMenuButton
               tooltip="Configurações"

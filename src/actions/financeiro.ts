@@ -81,3 +81,25 @@ export async function getContasAReceber() {
     return { success: false, error: error.message || "Falha ao buscar contas a receber." }
   }
 }
+
+export async function excluirConta(id: string) {
+  try {
+    await requireRole(["ADMIN"])
+
+    if (!id || typeof id !== "string") {
+      return { success: false, error: "ID de conta inválido." }
+    }
+
+    await prisma.financeiro.delete({
+      where: { id },
+    })
+
+    revalidatePath("/financeiro")
+    revalidatePath("/dashboard")
+    return { success: true }
+  } catch (error: any) {
+    console.error("Erro ao excluir conta:", error)
+    return { success: false, error: error.message || "Falha ao excluir a conta." }
+  }
+}
+

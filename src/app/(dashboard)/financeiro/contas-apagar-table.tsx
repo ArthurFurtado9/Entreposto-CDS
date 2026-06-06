@@ -11,19 +11,21 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
-import { darBaixaConta } from "@/actions/financeiro"
+import { darBaixaConta, excluirConta } from "@/actions/financeiro"
 import { useState } from "react"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
-import { CheckCircle2, Loader2 } from "lucide-react"
+import { CheckCircle2, Loader2, Trash2 } from "lucide-react"
 
 interface ContasApagarTableProps {
   initialData: any[]
+  isAdmin?: boolean
 }
 
-export function ContasApagarTable({ initialData }: ContasApagarTableProps) {
+export function ContasApagarTable({ initialData, isAdmin }: ContasApagarTableProps) {
   const [data, setData] = useState(initialData)
   const [loadingId, setLoadingId] = useState<string | null>(null)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
 
   const handleDarBaixa = async (id: string) => {
     setLoadingId(id)
@@ -43,6 +45,26 @@ export function ContasApagarTable({ initialData }: ContasApagarTableProps) {
       toast.error("Erro inesperado.")
     } finally {
       setLoadingId(null)
+    }
+  }
+
+  const handleExcluir = async (id: string) => {
+    if (!confirm("Tem certeza que deseja excluir permanentemente esta conta? Esta ação não pode ser desfeita e removerá o registro de todos os cálculos.")) {
+      return
+    }
+    setDeletingId(id)
+    try {
+      const result = await excluirConta(id)
+      if (result.success) {
+        toast.success("Conta excluída com sucesso!")
+        setData((prev) => prev.filter((item) => item.id !== id))
+      } else {
+        toast.error(result.error || "Erro ao excluir conta.")
+      }
+    } catch (error) {
+      toast.error("Erro inesperado.")
+    } finally {
+      setDeletingId(null)
     }
   }
 
@@ -94,24 +116,41 @@ export function ContasApagarTable({ initialData }: ContasApagarTableProps) {
                 </Badge>
               </TableCell>
               <TableCell className="text-right">
-                {conta.status === "PENDENTE" && (
-                  <Button 
-                    size="sm" 
-                    variant="outline" 
-                    className="h-8 border-green-200 hover:bg-green-50 hover:text-green-700"
-                    onClick={() => handleDarBaixa(conta.id)}
-                    disabled={loadingId === conta.id}
-                  >
-                    {loadingId === conta.id ? (
-                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                    ) : (
-                      <>
-                        <CheckCircle2 className="mr-1.5 h-3.5 w-3.5" />
-                        Dar Baixa
-                      </>
-                    )}
-                  </Button>
-                )}
+                <div className="flex items-center justify-end gap-2">
+                  {conta.status === "PENDENTE" && (
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      className="h-8 border-green-200 hover:bg-green-50 hover:text-green-700"
+                      onClick={() => handleDarBaixa(conta.id)}
+                      disabled={loadingId === conta.id || deletingId === conta.id}
+                    >
+                      {loadingId === conta.id ? (
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      ) : (
+                        <>
+                          <CheckCircle2 className="mr-1.5 h-3.5 w-3.5" />
+                          Dar Baixa
+                        </>
+                      )}
+                    </Button>
+                  )}
+                  {isAdmin && (
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      className="h-8 border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
+                      onClick={() => handleExcluir(conta.id)}
+                      disabled={loadingId === conta.id || deletingId === conta.id}
+                    >
+                      {deletingId === conta.id ? (
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      ) : (
+                        <Trash2 className="h-3.5 w-3.5" />
+                      )}
+                    </Button>
+                  )}
+                </div>
               </TableCell>
             </TableRow>
           ))
