@@ -108,14 +108,14 @@ export default async function DashboardPage(props: PageProps) {
                     <td className="py-1 font-medium text-slate-600 dark:text-slate-400">A Receber</td>
                     <td className="py-1 text-center text-slate-400 font-semibold">({data.contasAReceberCount})</td>
                     <td className="py-1 text-right font-bold text-emerald-600 dark:text-emerald-400">
-                      {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(data.contasAReceberValor)}
+                      {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(data.contasAReceberValor)}
                     </td>
                   </tr>
                   <tr>
                     <td className="py-1 font-medium text-slate-600 dark:text-slate-400">A Pagar</td>
                     <td className="py-1 text-center text-slate-400 font-semibold">({data.contasAPagarCount})</td>
                     <td className="py-1 text-right font-bold text-rose-600 dark:text-rose-400">
-                      {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(data.contasAPagarValor)}
+                      {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(data.contasAPagarValor)}
                     </td>
                   </tr>
                 </tbody>

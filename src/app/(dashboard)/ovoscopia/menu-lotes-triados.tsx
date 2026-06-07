@@ -21,12 +21,11 @@ export function MenuLotesTriados({ lote, isAdmin }: { lote: any, isAdmin: boolea
   const [editOpen, setEditOpen] = useState(false)
 
   // Estados dos inputs de quebra
-  const [trincados, setTrincados] = useState<number>(lote.quantidadeTrincados)
-  const [quebrados, setQuebrados] = useState<number>(lote.quantidadeQuebrados)
+  const [trincadosQuebrados, setTrincadosQuebrados] = useState<number>(lote.quantidadeTrincados + lote.quantidadeQuebrados)
   const [descarte, setDescarte] = useState<number>(lote.quantidadeDescarte)
 
   // Cálculo ao vivo do aproveitamento
-  const totalQuebras = trincados + quebrados + descarte
+  const totalQuebras = trincadosQuebrados + descarte
   const aproveitada = Math.max(0, lote.quantidadeOriginal - totalQuebras)
   const rendimentoPorcentagem = (aproveitada / lote.quantidadeOriginal) * 100
 
@@ -59,8 +58,8 @@ export function MenuLotesTriados({ lote, isAdmin }: { lote: any, isAdmin: boolea
       const result = await editarTriagem({
         loteId: lote.id,
         quebras: {
-          trincados: Number(trincados),
-          quebrados: Number(quebrados),
+          trincados: Number(trincadosQuebrados),
+          quebrados: 0,
           descarte: Number(descarte)
         }
       })
@@ -82,8 +81,7 @@ export function MenuLotesTriados({ lote, isAdmin }: { lote: any, isAdmin: boolea
       setEditOpen(open)
       if (open) {
         // Reseta os valores ao abrir para garantir sincronia com os props atuais
-        setTrincados(lote.quantidadeTrincados)
-        setQuebrados(lote.quantidadeQuebrados)
+        setTrincadosQuebrados(lote.quantidadeTrincados + lote.quantidadeQuebrados)
         setDescarte(lote.quantidadeDescarte)
       }
     }}>
@@ -123,29 +121,19 @@ export function MenuLotesTriados({ lote, isAdmin }: { lote: any, isAdmin: boolea
 
           <div className="border-t border-slate-100 my-2 pt-2">
             <h4 className="text-sm font-semibold text-slate-700 mb-3">Ajustar Quebras (Triagem)</h4>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <Label htmlFor="trincados-edit">Trincados</Label>
+                <Label htmlFor="trincados-quebrados-edit">Trincados / Quebrados</Label>
                 <Input 
-                  id="trincados-edit"
+                  id="trincados-quebrados-edit"
                   type="number" 
                   min={0}
-                  value={trincados} 
-                  onChange={(e) => setTrincados(Math.max(0, parseInt(e.target.value) || 0))} 
+                  value={trincadosQuebrados} 
+                  onChange={(e) => setTrincadosQuebrados(Math.max(0, parseInt(e.target.value) || 0))} 
                 />
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="quebrados-edit">Quebrados</Label>
-                <Input 
-                  id="quebrados-edit"
-                  type="number" 
-                  min={0}
-                  value={quebrados} 
-                  onChange={(e) => setQuebrados(Math.max(0, parseInt(e.target.value) || 0))} 
-                />
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="descarte-edit">Descarte</Label>
+                <Label htmlFor="descarte-edit">Estragados</Label>
                 <Input 
                   id="descarte-edit"
                   type="number" 

@@ -36,15 +36,19 @@ export function BotaoCarregamento({ lotes, clientes = [] }: { lotes: any[], clie
 
   // Itens de Embalagem
   const [qtd6, setQtd6] = useState(0)
-  const [preco6, setPreco6] = useState(0)
+  const [preco6, setPreco6] = useState("")
   
   const [qtd12, setQtd12] = useState(0)
-  const [preco12, setPreco12] = useState(0)
+  const [preco12, setPreco12] = useState("")
   
   const [qtd15, setQtd15] = useState(0)
-  const [preco15, setPreco15] = useState(0)
+  const [preco15, setPreco15] = useState("")
 
-  const valorTotal = (qtd6 * preco6) + (qtd12 * preco12) + (qtd15 * preco15)
+  const parsedPreco6 = parseFloat(preco6 || "0")
+  const parsedPreco12 = parseFloat(preco12 || "0")
+  const parsedPreco15 = parseFloat(preco15 || "0")
+
+  const valorTotal = (qtd6 * parsedPreco6) + (qtd12 * parsedPreco12) + (qtd15 * parsedPreco15)
   const totalOvosRequeridos = (qtd6 * 6) + (qtd12 * 12) + (qtd15 * 15)
   
   const totalOvosDisponiveis = selectedLoteIds.reduce((acc, id) => {
@@ -96,9 +100,9 @@ export function BotaoCarregamento({ lotes, clientes = [] }: { lotes: any[], clie
         nomeCliente,
         valorTotal,
         itens: [
-          { tipo: '6' as const, quantidadeBandejas: qtd6, precoBandeja: preco6 },
-          { tipo: '12' as const, quantidadeBandejas: qtd12, precoBandeja: preco12 },
-          { tipo: '15' as const, quantidadeBandejas: qtd15, precoBandeja: preco15 },
+          { tipo: '6' as const, quantidadeBandejas: qtd6, precoBandeja: parsedPreco6 },
+          { tipo: '12' as const, quantidadeBandejas: qtd12, precoBandeja: parsedPreco12 },
+          { tipo: '15' as const, quantidadeBandejas: qtd15, precoBandeja: parsedPreco15 },
         ]
       }
 
@@ -107,9 +111,9 @@ export function BotaoCarregamento({ lotes, clientes = [] }: { lotes: any[], clie
         toast.success("Carregamento registrado e faturado com sucesso!")
         setOpen(false)
         setSelectedLoteIds([])
-        setQtd6(0); setPreco6(0);
-        setQtd12(0); setPreco12(0);
-        setQtd15(0); setPreco15(0);
+        setQtd6(0); setPreco6("");
+        setQtd12(0); setPreco12("");
+        setQtd15(0); setPreco15("");
       } else {
         toast.error(result.error || "Erro ao iniciar carregamento.")
       }
@@ -217,10 +221,20 @@ export function BotaoCarregamento({ lotes, clientes = [] }: { lotes: any[], clie
                 </div>
                 <div>
                   <Label className="text-xs">Preço Unit. (R$)</Label>
-                  <Input type="number" min="0" step="0.01" value={preco6 || ""} onChange={e => setPreco6(Number(e.target.value))} />
+                  <Input 
+                    type="number" 
+                    min="0" 
+                    step="0.01" 
+                    value={preco6} 
+                    onChange={e => setPreco6(e.target.value)} 
+                    onBlur={e => {
+                      const val = parseFloat(e.target.value)
+                      if (!isNaN(val)) setPreco6(val.toFixed(2))
+                    }}
+                  />
                 </div>
                 <div className="text-right pb-2 text-sm font-medium text-slate-600">
-                  Subtotal: R$ {(qtd6 * preco6).toFixed(2)}
+                  Subtotal: R$ {(qtd6 * parsedPreco6).toFixed(2)}
                 </div>
               </div>
 
@@ -232,10 +246,20 @@ export function BotaoCarregamento({ lotes, clientes = [] }: { lotes: any[], clie
                 </div>
                 <div>
                   <Label className="text-xs">Preço Unit. (R$)</Label>
-                  <Input type="number" min="0" step="0.01" value={preco12 || ""} onChange={e => setPreco12(Number(e.target.value))} />
+                  <Input 
+                    type="number" 
+                    min="0" 
+                    step="0.01" 
+                    value={preco12} 
+                    onChange={e => setPreco12(e.target.value)} 
+                    onBlur={e => {
+                      const val = parseFloat(e.target.value)
+                      if (!isNaN(val)) setPreco12(val.toFixed(2))
+                    }}
+                  />
                 </div>
                 <div className="text-right pb-2 text-sm font-medium text-slate-600">
-                  Subtotal: R$ {(qtd12 * preco12).toFixed(2)}
+                  Subtotal: R$ {(qtd12 * parsedPreco12).toFixed(2)}
                 </div>
               </div>
 
@@ -247,10 +271,20 @@ export function BotaoCarregamento({ lotes, clientes = [] }: { lotes: any[], clie
                 </div>
                 <div>
                   <Label className="text-xs">Preço Unit. (R$)</Label>
-                  <Input type="number" min="0" step="0.01" value={preco15 || ""} onChange={e => setPreco15(Number(e.target.value))} />
+                  <Input 
+                    type="number" 
+                    min="0" 
+                    step="0.01" 
+                    value={preco15} 
+                    onChange={e => setPreco15(e.target.value)} 
+                    onBlur={e => {
+                      const val = parseFloat(e.target.value)
+                      if (!isNaN(val)) setPreco15(val.toFixed(2))
+                    }}
+                  />
                 </div>
                 <div className="text-right pb-2 text-sm font-medium text-slate-600">
-                  Subtotal: R$ {(qtd15 * preco15).toFixed(2)}
+                  Subtotal: R$ {(qtd15 * parsedPreco15).toFixed(2)}
                 </div>
               </div>
             </div>

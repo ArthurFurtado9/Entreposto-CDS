@@ -39,26 +39,19 @@ export async function getBIData() {
       }
     })
 
-    const trincados = agregacaoPerdas._sum.quantidadeTrincados || 0
-    const quebrados = agregacaoPerdas._sum.quantidadeQuebrados || 0
+    const trincadosEQuebrados = (agregacaoPerdas._sum.quantidadeTrincados || 0) + (agregacaoPerdas._sum.quantidadeQuebrados || 0)
     const descarte = agregacaoPerdas._sum.quantidadeDescarte || 0
-    const totalPerdas = trincados + quebrados + descarte
+    const totalPerdas = trincadosEQuebrados + descarte
 
     const alocacaoPerdas = [
       { 
-        label: "Ovos Trincados", 
-        value: totalPerdas > 0 ? `${((trincados / totalPerdas) * 100).toFixed(1)}%` : "0%", 
+        label: "Trincados / Quebrados", 
+        value: totalPerdas > 0 ? `${((trincadosEQuebrados / totalPerdas) * 100).toFixed(1)}%` : "0%", 
         color: "bg-orange-500",
-        raw: trincados
+        raw: trincadosEQuebrados
       },
       { 
-        label: "Quebra no Transporte", // Assuming this is quebrados
-        value: totalPerdas > 0 ? `${((quebrados / totalPerdas) * 100).toFixed(1)}%` : "0%", 
-        color: "bg-red-500",
-        raw: quebrados
-      },
-      { 
-        label: "Descarte / Sujeira", 
+        label: "Estragados", 
         value: totalPerdas > 0 ? `${((descarte / totalPerdas) * 100).toFixed(1)}%` : "0%", 
         color: "bg-slate-500",
         raw: descarte

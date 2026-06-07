@@ -96,7 +96,7 @@ export function GraficosFornecedores({
       <Card className="border-none shadow-sm bg-white">
         <CardHeader className="pb-2">
           <CardTitle className="text-base font-bold text-slate-900">Histórico de Refugo (%)</CardTitle>
-          <CardDescription>Taxa de ovos avariados (trincados + quebrados + descarte) nas triagens dos últimos 30 dias.</CardDescription>
+          <CardDescription>Taxa de ovos avariados (trincados / quebrados + estragados) nas triagens dos últimos 30 dias.</CardDescription>
         </CardHeader>
         <CardContent>
           {historicoRefugo.length === 0 ? (

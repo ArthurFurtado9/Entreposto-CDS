@@ -98,7 +98,7 @@ export default function BIPage() {
         <Card className="col-span-1">
           <CardHeader>
             <CardTitle>Alocação de Perdas</CardTitle>
-            <CardDescription>Principais motivos de descarte no sistema.</CardDescription>
+            <CardDescription>Principais motivos de perdas no sistema.</CardDescription>
           </CardHeader>
           <CardContent className="flex items-center justify-center h-[350px]">
              <div className="space-y-6 w-full max-w-[300px]">

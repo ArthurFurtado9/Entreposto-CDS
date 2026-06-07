@@ -70,10 +70,10 @@ export function RecebimentoForm({ fornecedores }: RecebimentoFormProps) {
           <div className="grid gap-2">
             <Label htmlFor="fornecedorId">Fornecedor (Granja)</Label>
             <Select name="fornecedorId" required>
-              <SelectTrigger>
+              <SelectTrigger className="w-full">
                 <SelectValue placeholder="Selecione a granja de origem" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="min-w-[300px] sm:min-w-[400px]">
                 {fornecedores.map((f) => (
                   <SelectItem key={f.id} value={f.id}>
                     {f.nome}
@@ -130,6 +130,12 @@ export function RecebimentoForm({ fornecedores }: RecebimentoFormProps) {
                 placeholder="Ex: 20.50" 
                 required 
                 min="0.01"
+                onBlur={(e) => {
+                  const val = parseFloat(e.target.value)
+                  if (!isNaN(val)) {
+                    e.target.value = val.toFixed(2)
+                  }
+                }}
               />
             </div>
           </div>

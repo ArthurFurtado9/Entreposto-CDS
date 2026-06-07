@@ -65,7 +65,7 @@ export function UltimasEntradasTable({ lotes, fornecedores }: UltimasEntradasTab
   const [editFornecedorId, setEditFornecedorId] = useState("")
   const [editQuantidade, setEditQuantidade] = useState(0)
   const [editDataRecebimento, setEditDataRecebimento] = useState("")
-  const [editValorBandeja, setEditValorBandeja] = useState(0)
+  const [editValorBandeja, setEditValorBandeja] = useState("")
   const [isEditing, setIsEditing] = useState(false)
 
   const handleStartEdit = (lote: Lote) => {
@@ -83,7 +83,7 @@ export function UltimasEntradasTable({ lotes, fornecedores }: UltimasEntradasTab
     const valBandeja = lote.financeiro 
       ? (Number(lote.financeiro.valor) / (lote.quantidadeOriginal / 30))
       : 0
-    setEditValorBandeja(Number(valBandeja.toFixed(2)))
+    setEditValorBandeja(valBandeja.toFixed(2))
   }
 
   async function handleConfirmEdit(event: React.FormEvent) {
@@ -95,7 +95,7 @@ export function UltimasEntradasTable({ lotes, fornecedores }: UltimasEntradasTab
       fornecedorId: editFornecedorId,
       quantidadeOriginal: editQuantidade,
       validadeOriginal: editDataRecebimento,
-      valorBandeja: editValorBandeja,
+      valorBandeja: parseFloat(editValorBandeja || "0"),
     }
 
     try {
@@ -318,10 +318,10 @@ export function UltimasEntradasTable({ lotes, fornecedores }: UltimasEntradasTab
                   onValueChange={(val) => setEditFornecedorId(val || "")}
                   required
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="w-full">
                     <SelectValue placeholder="Selecione a granja de origem" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="min-w-[300px] sm:min-w-[400px]">
                     {fornecedores.map((f) => (
                       <SelectItem key={f.id} value={f.id}>
                         {f.nome}
@@ -365,8 +365,12 @@ export function UltimasEntradasTable({ lotes, fornecedores }: UltimasEntradasTab
                     type="number" 
                     step="0.01" 
                     className="pl-8"
-                    value={editValorBandeja || ""} 
-                    onChange={(e) => setEditValorBandeja(parseFloat(e.target.value))}
+                    value={editValorBandeja} 
+                    onChange={(e) => setEditValorBandeja(e.target.value)}
+                    onBlur={(e) => {
+                      const val = parseFloat(e.target.value)
+                      if (!isNaN(val)) setEditValorBandeja(val.toFixed(2))
+                    }}
                     required 
                     min="0.01"
                   />

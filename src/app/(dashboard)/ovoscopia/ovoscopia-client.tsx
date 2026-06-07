@@ -23,23 +23,15 @@ import { toast } from "sonner"
 import { finalizarTriagem } from "@/actions/ovoscopia"
 import { Loader2 } from "lucide-react"
 
-interface Lote {
-  id: string
-  quantidadeOriginal: number
-  fornecedor: { nome: string }
-  dataRecebimento: Date
-}
-
 export function OvoscopiaClient({ lotes }: { lotes: any[] }) {
   const [isPending, startTransition] = useTransition()
   const [selectedLoteId, setSelectedLoteId] = useState<string>("")
-  const [broken, setBroken] = useState(0)
-  const [cracked, setCracked] = useState(0)
-  const [discard, setDiscard] = useState(0)
+  const [trincadosQuebrados, setTrincadosQuebrados] = useState(0)
+  const [discard, setDiscard] = useState(0) // Estragados
 
   const selectedLote = lotes.find(l => l.id === selectedLoteId)
   const original = selectedLote?.quantidadeOriginal || 0
-  const aproveitada = original - (broken + cracked + discard)
+  const aproveitada = original - (trincadosQuebrados + discard)
   const yieldPercent = original > 0 ? (aproveitada / original) * 100 : 0
 
   function handleSubmit() {
@@ -53,8 +45,8 @@ export function OvoscopiaClient({ lotes }: { lotes: any[] }) {
         const result = await finalizarTriagem({
           loteId: selectedLoteId,
           quebras: {
-            trincados: cracked,
-            quebrados: broken,
+            trincados: trincadosQuebrados,
+            quebrados: 0,
             descarte: discard
           }
         })
@@ -62,8 +54,7 @@ export function OvoscopiaClient({ lotes }: { lotes: any[] }) {
         if (result.success) {
           toast.success("Triagem finalizada com sucesso! Lote Interno e Financeiro gerados.")
           setSelectedLoteId("")
-          setBroken(0)
-          setCracked(0)
+          setTrincadosQuebrados(0)
           setDiscard(0)
         } else {
           toast.error(result.error || "Erro ao finalizar triagem.")
@@ -85,10 +76,10 @@ export function OvoscopiaClient({ lotes }: { lotes: any[] }) {
           <div className="grid gap-2">
             <Label htmlFor="lote">Lote Pendente</Label>
             <Select onValueChange={(val) => setSelectedLoteId(val || "")} value={selectedLoteId}>
-              <SelectTrigger id="lote">
+              <SelectTrigger id="lote" className="w-full">
                 <SelectValue placeholder="Selecione um lote" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="min-w-[300px] sm:min-w-[450px]">
                 {lotes.map((lote) => (
                   <SelectItem key={lote.id} value={lote.id}>
                     {lote.fornecedor.nome} - {lote.quantidadeOriginal} ovos ({new Date(lote.dataRecebimento).toLocaleDateString()})
@@ -121,32 +112,23 @@ export function OvoscopiaClient({ lotes }: { lotes: any[] }) {
           <CardDescription>Informe as quebras detectadas.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 gap-4">
             <div className="grid gap-2">
-              <Label htmlFor="trincados">Trincados</Label>
+              <Label htmlFor="trincadosQuebrados">Trincados / Quebrados</Label>
               <Input 
-                id="trincados" 
+                id="trincadosQuebrados" 
                 type="number" 
-                value={cracked || ""} 
-                onChange={(e) => setCracked(Number(e.target.value))}
+                value={trincadosQuebrados || ""} 
+                onChange={(e) => setTrincadosQuebrados(Math.max(0, parseInt(e.target.value) || 0))}
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="quebrados">Quebrados</Label>
-              <Input 
-                id="quebrados" 
-                type="number" 
-                value={broken || ""} 
-                onChange={(e) => setBroken(Number(e.target.value))}
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="descarte">Descarte</Label>
+              <Label htmlFor="descarte">Estragados</Label>
               <Input 
                 id="descarte" 
                 type="number" 
                 value={discard || ""} 
-                onChange={(e) => setDiscard(Number(e.target.value))}
+                onChange={(e) => setDiscard(Math.max(0, parseInt(e.target.value) || 0))}
               />
             </div>
           </div>
