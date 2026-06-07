@@ -23,8 +23,8 @@ export default async function RecebimentoPage() {
   return (
     <div className="flex flex-col gap-8 min-h-screen bg-slate-50/50 -m-4 p-4 md:-m-6 md:p-6 lg:-m-8 lg:p-8">
       <div className="flex flex-col gap-2">
-        <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">Recebimento de Lotes</h1>
-        <p className="text-sm text-muted-foreground">Registre a entrada física de ovos no entreposto.</p>
+        <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">Recebimento de Lotes de Ovos</h1>
+        <p className="text-sm text-muted-foreground">Registre a entrada física de lotes de ovos no entreposto.</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
@@ -37,7 +37,7 @@ export default async function RecebimentoPage() {
       </div>
 
       <div className="w-full">
-        <UltimasEntradasTable lotes={ultimosLotes as any} />
+        <UltimasEntradasTable lotes={ultimosLotes as any} fornecedores={fornecedores} />
       </div>
     </div>
   )

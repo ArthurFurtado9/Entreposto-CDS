@@ -203,6 +203,18 @@ export async function registrarCarregamento(rawData: unknown) {
         throw new Error("Falha inesperada ao alocar a quantidade de ovos nos lotes.")
       }
 
+      // 4. Inserir itens de venda
+      for (const item of data.itens) {
+        await tx.itemVenda.create({
+          data: {
+            pedidoId: pedido.id,
+            tipoEmbalagem: item.tipo,
+            quantidadeBandejas: item.quantidadeBandejas,
+            precoBandeja: item.precoBandeja
+          }
+        })
+      }
+
       // 5. Gera a Conta a Receber no Financeiro
       const validade = new Date()
       validade.setDate(validade.getDate() + 30) // Validade 30 dias
@@ -301,6 +313,7 @@ export async function excluirPedido(id: string) {
     
     // Deletar itens e o pedido
     await prisma.itemPedido.deleteMany({ where: { pedidoId: id } })
+    await prisma.itemVenda.deleteMany({ where: { pedidoId: id } })
     await prisma.pedido.delete({ where: { id } })
     
     revalidatePath("/logistica")

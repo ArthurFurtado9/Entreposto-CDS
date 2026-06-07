@@ -108,6 +108,7 @@ model Pedido {
   cliente       Cliente      @relation(fields: [clienteId], references: [id])
   status        PedidoStatus @default(PENDENTE) // PENDENTE, SEPARACAO, ENVIADO, ENTREGUE
   itens         ItemPedido[]
+  itensVenda    ItemVenda[]
   financeiro    Financeiro?
   dataPedido    DateTime     @default(now())
   createdAt     DateTime     @default(now())
@@ -174,6 +175,7 @@ model User {
   password  String
   role      UserRole @default(ADMIN)
   active    Boolean  @default(true)
+  onboardingDismissed Boolean @default(false)
   auditLogs AuditLog[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -216,3 +218,14 @@ model AuditLog {
   recurso   String
   createdAt DateTime @default(now())
 }
+
+model ItemVenda {
+  id                 String   @id @default(cuid())
+  pedidoId           String
+  pedido             Pedido   @relation(fields: [pedidoId], references: [id], onDelete: Cascade)
+  tipoEmbalagem      String   // "6", "12", "15"
+  quantidadeBandejas Int
+  precoBandeja       Float
+  createdAt          DateTime @default(now())
+}
+

@@ -14,19 +14,18 @@ import {
   Sparkles 
 } from "lucide-react"
 
-export function OnboardingCards() {
-  const [show, setShow] = useState(false)
+import { dismissOnboarding } from "@/actions/auth"
 
-  useEffect(() => {
-    const dismissed = localStorage.getItem("onboarding_guide_dismissed")
-    if (!dismissed) {
-      setShow(true)
-    }
-  }, [])
+interface OnboardingCardsProps {
+  initialShow: boolean
+}
 
-  const handleDismiss = () => {
-    localStorage.setItem("onboarding_guide_dismissed", "true")
+export function OnboardingCards({ initialShow }: OnboardingCardsProps) {
+  const [show, setShow] = useState(initialShow)
+
+  const handleDismiss = async () => {
     setShow(false)
+    await dismissOnboarding()
   }
 
   if (!show) return null

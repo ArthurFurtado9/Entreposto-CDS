@@ -38,11 +38,6 @@ const data = {
       icon: LayoutDashboard,
     },
     {
-      title: "Fornecedores",
-      url: "/fornecedores",
-      icon: Users,
-    },
-    {
       title: "Recebimento",
       url: "/recebimento",
       icon: Download,
@@ -66,6 +61,11 @@ const data = {
       title: "Produção e Insumos",
       url: "/producao",
       icon: Package,
+    },
+    {
+      title: "Fornecedores",
+      url: "/fornecedores",
+      icon: Users,
     },
     {
       title: "Relatórios / BI",

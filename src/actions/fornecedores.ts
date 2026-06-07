@@ -92,16 +92,12 @@ export async function registrarRecebimentoLote(rawData: unknown) {
 
     const data = validated.data
 
-    // Adiciona verificação lógica sobre a data de validade
-    if (data.validadeOriginal.getTime() < Date.now()) {
-      return { success: false, error: "A data de validade não pode ser no passado." }
-    }
-
     const lote = await prisma.loteEntrada.create({
       data: {
         fornecedorId: data.fornecedorId,
         quantidadeOriginal: data.quantidadeOriginal,
         validadeOriginal: data.validadeOriginal,
+        dataRecebimento: data.validadeOriginal,
         quantidadeAproveitada: 0,
         rendimentoPorcentagem: 0,
         status: "AGUARDANDO_TRIAGEM",
@@ -127,10 +123,71 @@ export async function registrarRecebimentoLote(rawData: unknown) {
     revalidatePath("/recebimento")
     revalidatePath("/ovoscopia")
     revalidatePath("/financeiro")
+    revalidatePath("/dashboard")
     return { success: true, data: { id: lote.id } }
   } catch (error: any) {
     console.error("Erro ao registrar recebimento:", error)
     return { success: false, error: error.message || "Falha ao registrar recebimento de lote." }
+  }
+}
+
+export async function editarRecebimentoLote(id: string, rawData: unknown) {
+  try {
+    await requireRole(["ADMIN", "OPERADOR"])
+
+    const validated = loteRecebimentoSchema.safeParse(rawData)
+    if (!validated.success) {
+      return { success: false, error: validated.error.issues[0].message }
+    }
+
+    const data = validated.data
+
+    await prisma.$transaction(async (tx) => {
+      // 1. Busca o lote
+      const lote = await tx.loteEntrada.findUnique({
+        where: { id },
+        include: { financeiro: true }
+      })
+
+      if (!lote) {
+        throw new Error("Lote não encontrado.")
+      }
+
+      if (lote.status !== "AGUARDANDO_TRIAGEM" && lote.status !== "RECEBIDO") {
+        throw new Error("Apenas lotes aguardando triagem/ovoscopia podem ser editados.")
+      }
+
+      // 2. Atualiza o lote
+      await tx.loteEntrada.update({
+        where: { id },
+        data: {
+          fornecedorId: data.fornecedorId,
+          quantidadeOriginal: data.quantidadeOriginal,
+          validadeOriginal: data.validadeOriginal,
+          dataRecebimento: data.validadeOriginal,
+        }
+      })
+
+      // 3. Atualiza o financeiro associado
+      if (lote.financeiro) {
+        const totalPagar = (data.quantidadeOriginal / 30) * data.valorBandeja
+        await tx.financeiro.update({
+          where: { id: lote.financeiro.id },
+          data: {
+            valor: totalPagar
+          }
+        })
+      }
+    })
+
+    revalidatePath("/recebimento")
+    revalidatePath("/ovoscopia")
+    revalidatePath("/financeiro")
+    revalidatePath("/dashboard")
+    return { success: true }
+  } catch (error: any) {
+    console.error("Erro ao editar recebimento de lote:", error)
+    return { success: false, error: error.message || "Falha ao editar lote." }
   }
 }
 
@@ -273,6 +330,11 @@ export async function getUltimosLotesRecebidos() {
         fornecedor: {
           select: {
             nome: true
+          }
+        },
+        financeiro: {
+          select: {
+            valor: true
           }
         }
       }

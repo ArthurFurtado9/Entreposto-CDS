@@ -83,8 +83,8 @@ export function RecebimentoForm({ fornecedores }: RecebimentoFormProps) {
             </Select>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="grid gap-2">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+            <div className="grid gap-2 md:col-span-3">
               <Label htmlFor="quantidade" className="flex items-center gap-1.5">
                 <Hash className="h-3.5 w-3.5 text-slate-400" />
                 Quantidade (Ovos)
@@ -98,20 +98,27 @@ export function RecebimentoForm({ fornecedores }: RecebimentoFormProps) {
                 min="1"
               />
             </div>
-            <div className="grid gap-2">
+            <div className="grid gap-2 md:col-span-4">
               <Label htmlFor="validade" className="flex items-center gap-1.5">
                 <Calendar className="h-3.5 w-3.5 text-slate-400" />
-                Validade Original
+                Data de Recebimento
               </Label>
               <Input 
                 id="validade" 
                 name="validade" 
                 type="date" 
                 required 
+                defaultValue={(() => {
+                  const d = new Date()
+                  const year = d.getFullYear()
+                  const month = String(d.getMonth() + 1).padStart(2, '0')
+                  const day = String(d.getDate()).padStart(2, '0')
+                  return `${year}-${month}-${day}`
+                })()}
               />
             </div>
-            <div className="grid gap-2">
-              <Label htmlFor="valorBandeja" className="flex items-center gap-1.5">
+            <div className="grid gap-2 md:col-span-5">
+              <Label htmlFor="valorBandeja" className="flex items-center gap-1.5 whitespace-nowrap">
                 <span className="font-bold text-slate-400">R$</span>
                 Valor da Bandeja (30 ovos)
               </Label>

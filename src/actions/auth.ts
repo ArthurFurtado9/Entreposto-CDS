@@ -6,6 +6,7 @@ import { SignJWT } from "jose"
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 import { z } from "zod"
+import { getCurrentUser } from "@/lib/auth-utils"
 
 if (!process.env.JWT_SECRET) {
   throw new Error("JWT_SECRET não definido nas variáveis de ambiente.")
@@ -139,4 +140,23 @@ export async function logout() {
   const cookieStore = await cookies()
   cookieStore.delete("auth_token")
   redirect("/login")
+}
+
+export async function dismissOnboarding() {
+  try {
+    const user = await getCurrentUser()
+    if (!user) {
+      return { success: false, error: "Não autenticado." }
+    }
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { onboardingDismissed: true },
+    })
+
+    return { success: true }
+  } catch (error: any) {
+    console.error("Erro ao dispensar guia de integração:", error)
+    return { success: false, error: error.message || "Erro interno." }
+  }
 }
