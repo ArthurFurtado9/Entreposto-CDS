@@ -541,5 +541,52 @@ export async function getFornecedoresGraficosData() {
   }
 }
 
+export async function getRecebimentoChartData() {
+  try {
+    await requireAuth()
+    const trintaDiasAtras = new Date()
+    trintaDiasAtras.setDate(trintaDiasAtras.getDate() - 30)
+
+    const data = await prisma.loteEntrada.groupBy({
+      by: ["fornecedorId"],
+      where: {
+        dataRecebimento: {
+          gte: trintaDiasAtras
+        }
+      },
+      _sum: {
+        quantidadeOriginal: true
+      }
+    })
+
+    const fornecedores = await prisma.fornecedor.findMany({
+      where: {
+        id: {
+          in: data.map(d => d.fornecedorId)
+        }
+      },
+      select: {
+        id: true,
+        nome: true
+      }
+    })
+
+    const chartData = data.map(d => {
+      const fornecedor = fornecedores.find(f => f.id === d.fornecedorId)
+      return {
+        name: fornecedor?.nome || "Desconhecido",
+        value: d._sum.quantidadeOriginal || 0
+      }
+    }).filter(d => d.value > 0)
+
+    return { success: true, data: chartData }
+  } catch (error: any) {
+    if (error.message !== "Não autenticado." && !error.message?.includes("Acesso negado")) {
+      console.error("Erro ao buscar dados do gráfico de recebimento:", error)
+    }
+    return { success: false, error: error.message || "Falha ao buscar dados do gráfico de recebimento." }
+  }
+}
+
 
 

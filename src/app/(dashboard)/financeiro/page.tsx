@@ -112,7 +112,7 @@ export default async function FinanceiroPage() {
 
         <Card className="border-none shadow-sm glass-panel hover-lift overflow-hidden">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-slate-600">Saídas Pendentes</CardTitle>
+            <CardTitle className="text-sm font-medium text-slate-600">Contas a Pagar</CardTitle>
             <ArrowDownCircle className="h-4 w-4 text-red-500" />
           </CardHeader>
           <CardContent>
@@ -128,7 +128,7 @@ export default async function FinanceiroPage() {
 
         <Card className="border-none shadow-sm glass-panel hover-lift overflow-hidden">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-slate-600">Entradas Pendentes</CardTitle>
+            <CardTitle className="text-sm font-medium text-slate-600">Contas a Receber</CardTitle>
             <ArrowUpCircle className="h-4 w-4 text-emerald-500" />
           </CardHeader>
           <CardContent>

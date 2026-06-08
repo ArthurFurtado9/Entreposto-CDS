@@ -11,7 +11,7 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
-import { darBaixaConta, excluirConta } from "@/actions/financeiro"
+import { darBaixaConta, excluirConta, estornarConta } from "@/actions/financeiro"
 import { useState } from "react"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
@@ -28,6 +28,9 @@ export function ContasApagarTable({ initialData, isAdmin }: ContasApagarTablePro
   const [deletingId, setDeletingId] = useState<string | null>(null)
 
   const handleDarBaixa = async (id: string) => {
+    if (!confirm("Tem certeza que quer registrar o pagamento (dar baixa) desta conta?")) {
+      return
+    }
     setLoadingId(id)
     try {
       const result = await darBaixaConta(id)
@@ -40,6 +43,30 @@ export function ContasApagarTable({ initialData, isAdmin }: ContasApagarTablePro
         )
       } else {
         toast.error(result.error || "Erro ao processar pagamento.")
+      }
+    } catch (error) {
+      toast.error("Erro inesperado.")
+    } finally {
+      setLoadingId(null)
+    }
+  }
+
+  const handleEstornar = async (id: string) => {
+    if (!confirm("Tem certeza que deseja estornar (cancelar a baixa) desta conta? Ela voltará para o status PENDENTE.")) {
+      return
+    }
+    setLoadingId(id)
+    try {
+      const result = await estornarConta(id)
+      if (result.success) {
+        toast.success("Pagamento estornado com sucesso!")
+        setData((prev) => 
+          prev.map((item) => 
+            item.id === id ? { ...item, status: "PENDENTE" } : item
+          )
+        )
+      } else {
+        toast.error(result.error || "Erro ao estornar pagamento.")
       }
     } catch (error) {
       toast.error("Erro inesperado.")
@@ -117,7 +144,7 @@ export function ContasApagarTable({ initialData, isAdmin }: ContasApagarTablePro
               </TableCell>
               <TableCell className="text-right">
                 <div className="flex items-center justify-end gap-2">
-                  {conta.status === "PENDENTE" && (
+                   {conta.status === "PENDENTE" ? (
                     <Button 
                       size="sm" 
                       variant="outline" 
@@ -132,6 +159,20 @@ export function ContasApagarTable({ initialData, isAdmin }: ContasApagarTablePro
                           <CheckCircle2 className="mr-1.5 h-3.5 w-3.5" />
                           Dar Baixa
                         </>
+                      )}
+                    </Button>
+                  ) : (
+                    <Button 
+                      size="sm" 
+                      variant="ghost" 
+                      className="h-8 text-amber-600 hover:bg-amber-50 hover:text-amber-700 text-xs"
+                      onClick={() => handleEstornar(conta.id)}
+                      disabled={loadingId === conta.id || deletingId === conta.id}
+                    >
+                      {loadingId === conta.id ? (
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      ) : (
+                        "Estornar"
                       )}
                     </Button>
                   )}

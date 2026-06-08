@@ -81,7 +81,7 @@ export function ConfiguracoesClient({
               className="gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-violet-500 data-[state=active]:to-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-md px-4 rounded-lg transition-all"
             >
               <Shield className="size-4" />
-              <span className="hidden sm:inline">Segurança</span>
+              <span className="hidden sm:inline">Histórico</span>
             </TabsTrigger>
             <TabsTrigger
               value="dados"

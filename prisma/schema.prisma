@@ -33,6 +33,7 @@ model Insumo {
   estoqueAtual   Float           @default(0)
   estoqueMinimo  Float           @default(0)
   usoProducao    UsoInsumo[]
+  componentesProduto ComponenteProduto[]
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
 }
@@ -97,6 +98,14 @@ model Cliente {
   id        String   @id @default(cuid())
   nome      String
   cnpj      String?  @unique
+  email     String?  @unique
+  cep       String?
+  rua       String?
+  bairro    String?
+  cidade    String?
+  estado    String?
+  telefone  String?
+  contato   String?
   pedidos   Pedido[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -227,5 +236,78 @@ model ItemVenda {
   quantidadeBandejas Int
   precoBandeja       Float
   createdAt          DateTime @default(now())
+}
+
+model Produto {
+  id                String       @id @default(cuid())
+  nome              String       // Descrição do produto
+  codigo            String       @unique // SKU
+  formato           String       // SIMPLES, COMPOSICAO, VARIACOES
+  tipo              String       @default("PRODUTO") // Tipo de item
+  situacao          Boolean      @default(true) // true = Ativado, false = Desativado
+  precoVenda        Decimal      @default(0)
+  condicao          String       @default("NOVO") // NOVO, RECONDICIONADO
+  imagemUrl         String?
+  
+  // Características
+  marca             String?
+  producao          String?      @default("PROPRIA")
+  dataValidade      DateTime?
+  freteGratis       String?      @default("NAO")
+  pesoLiquido       Float?       @default(0)
+  pesoBruto         Float?       @default(0)
+  largura           Float?       @default(0)
+  altura            Float?       @default(0)
+  profundidade      Float?       @default(0)
+  volumes           Int?         @default(1)
+  itensCaixa        Int?         @default(1)
+  unidadeMedida     String?      @default("Centimetros")
+  gtinEan           String?
+  gtinEanTributario String?
+  departamento      String?
+  
+  // Tributação
+  origem            String?      @default("0")
+  ncm               String?
+  cest              String?
+  tipoItem          String?      @default("PRODUTO_ACABADO")
+  percentualTributos Float?      @default(0)
+  grupoProdutos     String?
+  icmsBaseStRetencao Float?      @default(0)
+  icmsStRetencao    Float?       @default(0)
+  icmsProprioSubstituto Float?   @default(0)
+  ipiCodigoExcecaoTipi String?
+  pisFixo           Float?       @default(0)
+  cofinsFixo        Float?       @default(0)
+  informacoesAdicionais String?
+  
+  // Estrutura
+  tipoEstoque       String?      @default("VIRTUAL") // VIRTUAL, FISICO
+  
+  // Relações
+  componentes       ComponenteProduto[] @relation("ProdutoPai")
+  componenteDe      ComponenteProduto[] @relation("ProdutoFilho")
+  
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+}
+
+model ComponenteProduto {
+  id              String   @id @default(cuid())
+  produtoPaiId    String
+  produtoPai      Produto  @relation("ProdutoPai", fields: [produtoPaiId], references: [id], onDelete: Cascade)
+  
+  produtoFilhoId  String?
+  produtoFilho    Produto? @relation("ProdutoFilho", fields: [produtoFilhoId], references: [id], onDelete: SetNull)
+  
+  insumoId        String?
+  insumo          Insumo?  @relation(fields: [insumoId], references: [id], onDelete: SetNull)
+  
+  quantidade      Float    @default(1)
+  precoCusto      Decimal  @default(0)
+  precoVenda      Decimal  @default(0)
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }
 

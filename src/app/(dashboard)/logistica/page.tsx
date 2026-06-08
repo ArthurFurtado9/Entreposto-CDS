@@ -18,7 +18,7 @@ import { Button } from "@/components/ui/button"
 import { CheckCircle2 } from "lucide-react"
 import { getPedidosLogistica, getLotesDisponiveis, getClientes } from "@/actions/logistica"
 import { BotaoCarregamento } from "./botao-carregamento"
-import { NovoClienteModal } from "./novo-cliente-modal"
+import { EditarPedidoModal } from "./editar-pedido-modal"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
 import { getCurrentUser } from "@/lib/auth-utils"
@@ -44,7 +44,6 @@ export default async function LogisticaPage() {
           <p className="text-sm text-muted-foreground">Gerencie a separação de pedidos B2B e alocação de estoque.</p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
-          <NovoClienteModal />
           <BotaoCarregamento lotes={estoqueLotes} clientes={clientes} />
         </div>
       </div>
@@ -64,13 +63,13 @@ export default async function LogisticaPage() {
                   <TableHead>Cliente</TableHead>
                   <TableHead>Qtd (Ovos)</TableHead>
                   <TableHead>Status</TableHead>
-                  {isAdmin && <TableHead className="w-[80px]">Ações</TableHead>}
+                  <TableHead className="w-[80px]">Ações</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {pedidos.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={4} className="text-center text-muted-foreground py-4">Nenhum pedido encontrado.</TableCell>
+                    <TableCell colSpan={5} className="text-center text-muted-foreground py-4">Nenhum pedido encontrado.</TableCell>
                   </TableRow>
                 )}
                 {pedidos.map((p: any) => (
@@ -83,11 +82,12 @@ export default async function LogisticaPage() {
                         {p.status}
                       </Badge>
                     </TableCell>
-                    {isAdmin && (
-                      <TableCell>
-                        <BotaoExcluirPedido id={p.id} />
-                      </TableCell>
-                    )}
+                    <TableCell>
+                      <div className="flex items-center gap-1">
+                        <EditarPedidoModal pedidoId={p.id} clientes={clientes} lotes={estoqueLotes} />
+                        {isAdmin && <BotaoExcluirPedido id={p.id} />}
+                      </div>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -124,13 +124,11 @@ export default async function LogisticaPage() {
                          <p className="font-bold">{l.ovos}</p>
                          <p className="text-[10px] text-muted-foreground uppercase">Ovos</p>
                       </div>
-                      <div className="ml-2">
-                         {l.status === "RESERVADO" ? (
+                       {l.status === "RESERVADO" && (
+                         <div className="ml-2">
                             <Badge variant="outline">Bloqueado</Badge>
-                         ) : (
-                            <Button size="icon" variant="ghost"><CheckCircle2 className="h-4 w-4" /></Button>
-                         )}
-                      </div>
+                         </div>
+                       )}
                    </div>
                 ))}
              </div>

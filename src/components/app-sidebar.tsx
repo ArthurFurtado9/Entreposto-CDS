@@ -58,9 +58,19 @@ const data = {
       icon: CircleDollarSign,
     },
     {
+      title: "Produtos",
+      url: "/produtos",
+      icon: Package,
+    },
+    {
       title: "Produção e Insumos",
       url: "/producao",
       icon: Package,
+    },
+    {
+      title: "Clientes",
+      url: "/clientes",
+      icon: Users,
     },
     {
       title: "Fornecedores",

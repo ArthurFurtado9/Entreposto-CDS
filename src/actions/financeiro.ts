@@ -103,3 +103,28 @@ export async function excluirConta(id: string) {
   }
 }
 
+export async function estornarConta(id: string) {
+  try {
+    await requireRole(["ADMIN", "FINANCEIRO"])
+
+    if (!id || typeof id !== "string") {
+      return { success: false, error: "ID de conta inválido." }
+    }
+
+    await prisma.financeiro.update({
+      where: { id },
+      data: {
+        status: "PENDENTE",
+        dataPagamento: null,
+      },
+    })
+
+    revalidatePath("/financeiro")
+    return { success: true }
+  } catch (error: any) {
+    console.error("Erro ao estornar conta:", error)
+    return { success: false, error: error.message || "Falha ao estornar o pagamento." }
+  }
+}
+
+

@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -28,11 +29,13 @@ import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
 
 export function BotaoCarregamento({ lotes, clientes = [] }: { lotes: any[], clientes?: any[] }) {
+  const router = useRouter()
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   
   // Lotes selecionados (apenas IDs)
   const [selectedLoteIds, setSelectedLoteIds] = useState<string[]>([])
+  const [selectedClienteId, setSelectedClienteId] = useState("")
 
   // Itens de Embalagem
   const [qtd6, setQtd6] = useState(0)
@@ -89,15 +92,17 @@ export function BotaoCarregamento({ lotes, clientes = [] }: { lotes: any[], clie
       return
     }
 
-    setLoading(true)
+    if (!selectedClienteId) {
+      toast.error("Selecione o cliente para o carregamento.")
+      return
+    }
 
-    const formData = new FormData(event.currentTarget)
-    const nomeCliente = formData.get("cliente") as string
+    setLoading(true)
 
     try {
       const data = {
         loteIds: selectedLoteIds,
-        nomeCliente,
+        clienteId: selectedClienteId,
         valorTotal,
         itens: [
           { tipo: '6' as const, quantidadeBandejas: qtd6, precoBandeja: parsedPreco6 },
@@ -111,6 +116,7 @@ export function BotaoCarregamento({ lotes, clientes = [] }: { lotes: any[], clie
         toast.success("Carregamento registrado e faturado com sucesso!")
         setOpen(false)
         setSelectedLoteIds([])
+        setSelectedClienteId("")
         setQtd6(0); setPreco6("");
         setQtd12(0); setPreco12("");
         setQtd15(0); setPreco15("");
@@ -129,6 +135,7 @@ export function BotaoCarregamento({ lotes, clientes = [] }: { lotes: any[], clie
       setOpen(val)
       if (!val) {
         setSelectedLoteIds([])
+        setSelectedClienteId("")
       }
     }}>
       <DialogTrigger render={
@@ -137,7 +144,7 @@ export function BotaoCarregamento({ lotes, clientes = [] }: { lotes: any[], clie
           Iniciar Carregamento
         </Button>
       } />
-      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[760px] max-h-[90vh] overflow-y-auto bg-white">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
             <DialogTitle>Registrar Carregamento</DialogTitle>
@@ -149,13 +156,35 @@ export function BotaoCarregamento({ lotes, clientes = [] }: { lotes: any[], clie
           <div className="grid gap-6 py-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="grid gap-2">
-                <Label htmlFor="cliente">Nome do Cliente</Label>
-                <Input id="cliente" name="cliente" list="clientes-list" placeholder="Ex: Supermercado Central" required autoComplete="off" />
-                <datalist id="clientes-list">
-                  {clientes.map(c => (
-                    <option key={c.id} value={c.nome} />
-                  ))}
-                </datalist>
+                <Label htmlFor="cliente">Cliente</Label>
+                <Select
+                  value={selectedClienteId}
+                  onValueChange={(val) => {
+                    if (val === "new-client") {
+                      setOpen(false)
+                      router.push("/clientes")
+                    } else {
+                      setSelectedClienteId(val || "")
+                    }
+                  }}
+                >
+                  <SelectTrigger id="cliente">
+                    <SelectValue placeholder="Selecione o cliente...">
+                      {clientes.find(c => c.id === selectedClienteId)?.nome}
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent className="min-w-[300px] sm:min-w-[400px]">
+                    {clientes.map(c => (
+                      <SelectItem key={c.id} value={c.id}>
+                        {c.nome}
+                      </SelectItem>
+                    ))}
+                    <div className="border-t border-slate-100 my-1" />
+                    <SelectItem value="new-client" className="text-blue-600 font-semibold hover:text-blue-700">
+                      + Cadastrar Novo Cliente
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               <div className="grid gap-2">
                 <Label>Adicionar Lote Interno</Label>

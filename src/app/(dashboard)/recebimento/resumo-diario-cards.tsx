@@ -13,7 +13,7 @@ export function ResumoDiarioCards({ stats }: ResumoDiarioCardsProps) {
   const formattedOvos = new Intl.NumberFormat("pt-BR").format(stats.ovosRecebidosHoje)
   
   return (
-    <div className="flex flex-col gap-4 w-full md:w-80">
+    <div className="flex flex-col gap-4 w-full">
       <Card className="border-none shadow-sm bg-white hover:shadow-md transition-all duration-200 hover:-translate-y-0.5">
         <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
           <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Ovos Recebidos Hoje</span>
