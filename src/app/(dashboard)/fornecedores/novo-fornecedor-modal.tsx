@@ -47,6 +47,7 @@ export function NovoFornecedorModal() {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [fetchingCnpj, setFetchingCnpj] = useState(false)
+  const [fetchingCep, setFetchingCep] = useState(false)
 
   // Campos controlados do formulário
   const [cnpj, setCnpj] = useState("")
@@ -113,6 +114,30 @@ export function NovoFornecedorModal() {
     // Disparar busca automática quando os 14 dígitos forem digitados
     if (raw.length === 14) {
       fetchCnpjData(raw)
+    }
+  }
+
+  async function handleCepBlur(e: React.FocusEvent<HTMLInputElement>) {
+    const rawCep = e.target.value.replace(/\D/g, "")
+    if (rawCep.length !== 8) return
+
+    setFetchingCep(true)
+    try {
+      const res = await fetch(`https://viacep.com.br/ws/${rawCep}/json/`)
+      const data = await res.json()
+      if (data.erro) {
+        toast.error("CEP não encontrado.")
+      } else {
+        setRua(data.logradouro || "")
+        setBairro(data.bairro || "")
+        setCidade(data.localidade || "")
+        setEstado(data.uf || "")
+        toast.success("Endereço preenchido via CEP!")
+      }
+    } catch (err) {
+      toast.error("Erro ao buscar CEP.")
+    } finally {
+      setFetchingCep(false)
     }
   }
 
@@ -237,12 +262,16 @@ export function NovoFornecedorModal() {
                 {/* CEP e Estado */}
                 <div className="grid grid-cols-[1fr_80px] gap-4">
                   <div className="grid gap-2">
-                    <Label htmlFor="cep">CEP</Label>
+                    <Label htmlFor="cep" className="flex items-center gap-1">
+                      CEP
+                      {fetchingCep && <Loader2 className="h-3 w-3 animate-spin text-slate-400" />}
+                    </Label>
                     <Input
                       id="cep"
                       name="cep"
                       value={cep}
                       onChange={(e) => setCep(e.target.value)}
+                      onBlur={handleCepBlur}
                       placeholder="00000-000"
                     />
                   </div>
@@ -311,3 +340,4 @@ export function NovoFornecedorModal() {
     </Dialog>
   )
 }
+

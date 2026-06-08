@@ -5,10 +5,28 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { Info, HelpCircle } from "lucide-react"
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip"
 
 interface TabTributacaoProps {
   fields: any
   onChange: (field: string, val: any) => void
+}
+
+function Help({ text }: { text: string }) {
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger render={
+          <span className="cursor-help inline-flex items-center">
+            <HelpCircle className="h-3.5 w-3.5 text-slate-400 hover:text-slate-600 transition-colors" />
+          </span>
+        } />
+        <TooltipContent className="bg-slate-900 dark:bg-zinc-800 text-white dark:text-zinc-100 p-2 rounded shadow-md text-xs max-w-[220px] leading-relaxed">
+          {text}
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  )
 }
 
 export function TabTributacao({ fields, onChange }: TabTributacaoProps) {
@@ -28,18 +46,18 @@ export function TabTributacao({ fields, onChange }: TabTributacaoProps) {
         
         {/* Origem */}
         <div className="grid gap-1.5 md:col-span-1">
-          <Label htmlFor="origem" className="flex items-center gap-1 text-slate-600 font-medium">
+          <Label htmlFor="origem" className="flex items-center gap-1.5 text-slate-600 font-medium">
             Origem
-            <HelpCircle className="h-3 w-3 text-slate-400" />
+            <Help text="Origem da mercadoria (Nacional/Estrangeira) para fins de apuração de ICMS." />
           </Label>
           <Select 
             value={fields.origem || "0"} 
             onValueChange={val => onChange("origem", val)}
           >
-            <SelectTrigger id="origem" className="h-8 text-xs">
+            <SelectTrigger id="origem" className="h-8 text-xs w-full md:min-w-[240px]">
               <SelectValue placeholder="Selecione a origem..." />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="min-w-[380px] max-w-[500px]">
               <SelectItem value="0">0 - Nacional, exceto as indicadas nos códigos 3, 4, 5 e 8</SelectItem>
               <SelectItem value="1">1 - Estrangeira - Importação direta, exceto a indicada no código 6</SelectItem>
               <SelectItem value="2">2 - Estrangeira - Adquirida no mercado interno, exceto a indicada no código 7</SelectItem>
@@ -49,9 +67,9 @@ export function TabTributacao({ fields, onChange }: TabTributacaoProps) {
 
         {/* NCM */}
         <div className="grid gap-1.5 col-span-1">
-          <Label htmlFor="ncm" className="flex items-center gap-1 text-slate-600 font-medium">
+          <Label htmlFor="ncm" className="flex items-center gap-1.5 text-slate-600 font-medium">
             NCM
-            <HelpCircle className="h-3 w-3 text-slate-400" />
+            <Help text="Nomenclatura Comum do Mercosul. Código de 8 dígitos para classificação fiscal." />
           </Label>
           <Input 
             id="ncm" 
@@ -64,9 +82,9 @@ export function TabTributacao({ fields, onChange }: TabTributacaoProps) {
 
         {/* CEST */}
         <div className="grid gap-1.5 col-span-1">
-          <Label htmlFor="cest" className="flex items-center gap-1 text-slate-600 font-medium">
+          <Label htmlFor="cest" className="flex items-center gap-1.5 text-slate-600 font-medium">
             CEST
-            <HelpCircle className="h-3 w-3 text-slate-400" />
+            <Help text="Código Especificador da Substituição Tributária (7 dígitos)." />
           </Label>
           <Input 
             id="cest" 
@@ -79,18 +97,18 @@ export function TabTributacao({ fields, onChange }: TabTributacaoProps) {
 
         {/* Tipo do item */}
         <div className="grid gap-1.5 col-span-1">
-          <Label htmlFor="tipoItem" className="flex items-center gap-1 text-slate-600 font-medium">
+          <Label htmlFor="tipoItem" className="flex items-center gap-1.5 text-slate-600 font-medium">
             Tipo do item
-            <HelpCircle className="h-3 w-3 text-slate-400" />
+            <Help text="Tipo do item conforme tabela do Bloco K (matéria-prima, produto acabado, embalagem, etc.)." />
           </Label>
           <Select 
             value={fields.tipoItem || "PRODUTO_ACABADO"} 
             onValueChange={val => onChange("tipoItem", val)}
           >
-            <SelectTrigger id="tipoItem" className="h-8 text-xs">
+            <SelectTrigger id="tipoItem" className="h-8 text-xs w-full md:min-w-[180px]">
               <SelectValue placeholder="Selecione o tipo..." />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="min-w-[180px]">
               <SelectItem value="PRODUTO_ACABADO">Produto Acabado</SelectItem>
               <SelectItem value="MATERIA_PRIMA">Matéria Prima</SelectItem>
               <SelectItem value="EMBALAGEM">Embalagem</SelectItem>
@@ -101,9 +119,9 @@ export function TabTributacao({ fields, onChange }: TabTributacaoProps) {
 
         {/* % Tributos */}
         <div className="grid gap-1.5 col-span-1">
-          <Label htmlFor="percentualTributos" className="flex items-center gap-1 text-slate-600 font-medium">
+          <Label htmlFor="percentualTributos" className="flex items-center gap-1.5 text-slate-600 font-medium">
             % Tributos
-            <HelpCircle className="h-3 w-3 text-slate-400" />
+            <Help text="Percentual aproximado de carga tributária incidente (Lei da Transparência)." />
           </Label>
           <Input 
             id="percentualTributos" 
@@ -139,9 +157,9 @@ export function TabTributacao({ fields, onChange }: TabTributacaoProps) {
         </h4>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="grid gap-1.5 col-span-1">
-            <Label htmlFor="icmsBaseStRetencao" className="flex items-center gap-1 text-slate-600 text-xs">
+            <Label htmlFor="icmsBaseStRetencao" className="flex items-center gap-1.5 text-slate-600 text-xs">
               Valor base ICMS ST - retenção
-              <HelpCircle className="h-3 w-3 text-slate-400" />
+              <Help text="Valor da base de cálculo do ICMS ST retido na operação anterior." />
             </Label>
             <Input 
               id="icmsBaseStRetencao" 
@@ -154,9 +172,9 @@ export function TabTributacao({ fields, onChange }: TabTributacaoProps) {
             />
           </div>
           <div className="grid gap-1.5 col-span-1">
-            <Label htmlFor="icmsStRetencao" className="flex items-center gap-1 text-slate-600 text-xs">
+            <Label htmlFor="icmsStRetencao" className="flex items-center gap-1.5 text-slate-600 text-xs">
               Valor ICMS ST para retenção
-              <HelpCircle className="h-3 w-3 text-slate-400" />
+              <Help text="Valor do imposto ICMS Substituição Tributária retido." />
             </Label>
             <Input 
               id="icmsStRetencao" 
@@ -169,9 +187,9 @@ export function TabTributacao({ fields, onChange }: TabTributacaoProps) {
             />
           </div>
           <div className="grid gap-1.5 col-span-1">
-            <Label htmlFor="icmsProprioSubstituto" className="flex items-center gap-1 text-slate-600 text-xs">
+            <Label htmlFor="icmsProprioSubstituto" className="flex items-center gap-1.5 text-slate-600 text-xs">
               Valor ICMS próprio do substituto
-              <HelpCircle className="h-3 w-3 text-slate-400" />
+              <Help text="Valor do ICMS próprio correspondente à operação própria do substituto." />
             </Label>
             <Input 
               id="icmsProprioSubstituto" 
@@ -193,9 +211,9 @@ export function TabTributacao({ fields, onChange }: TabTributacaoProps) {
         </h4>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="grid gap-1.5 col-span-1">
-            <Label htmlFor="ipiCodigoExcecaoTipi" className="flex items-center gap-1 text-slate-600 text-xs">
+            <Label htmlFor="ipiCodigoExcecaoTipi" className="flex items-center gap-1.5 text-slate-600 text-xs">
               Código exceção da TIPI
-              <HelpCircle className="h-3 w-3 text-slate-400" />
+              <Help text="Código correspondente à exceção de alíquota da tabela do IPI." />
             </Label>
             <Input 
               id="ipiCodigoExcecaoTipi" 
@@ -214,9 +232,9 @@ export function TabTributacao({ fields, onChange }: TabTributacaoProps) {
         </h4>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="grid gap-1.5 col-span-1">
-            <Label htmlFor="pisFixo" className="flex items-center gap-1 text-slate-600 text-xs">
+            <Label htmlFor="pisFixo" className="flex items-center gap-1.5 text-slate-600 text-xs">
               Valor PIS fixo
-              <HelpCircle className="h-3 w-3 text-slate-400" />
+              <Help text="Alíquota fixa (em valor) aplicável para cálculo do PIS." />
             </Label>
             <Input 
               id="pisFixo" 
@@ -229,9 +247,9 @@ export function TabTributacao({ fields, onChange }: TabTributacaoProps) {
             />
           </div>
           <div className="grid gap-1.5 col-span-1">
-            <Label htmlFor="cofinsFixo" className="flex items-center gap-1 text-slate-600 text-xs">
+            <Label htmlFor="cofinsFixo" className="flex items-center gap-1.5 text-slate-600 text-xs">
               Valor COFINS fixo
-              <HelpCircle className="h-3 w-3 text-slate-400" />
+              <Help text="Alíquota fixa (em valor) aplicável para cálculo do COFINS." />
             </Label>
             <Input 
               id="cofinsFixo" 
@@ -250,9 +268,9 @@ export function TabTributacao({ fields, onChange }: TabTributacaoProps) {
       <div className="border-t border-slate-100 pt-4">
         <h4 className="text-sm font-semibold text-slate-700 mb-3">Dados adicionais</h4>
         <div className="grid gap-1.5">
-          <Label htmlFor="informacoesAdicionais" className="flex items-center gap-1 text-slate-600 text-xs">
+          <Label htmlFor="informacoesAdicionais" className="flex items-center gap-1.5 text-slate-600 text-xs">
             Informações Adicionais
-            <HelpCircle className="h-3 w-3 text-slate-400" />
+            <Help text="Observações fiscais impressas na nota fiscal eletrônica." />
           </Label>
           <Textarea 
             id="informacoesAdicionais" 

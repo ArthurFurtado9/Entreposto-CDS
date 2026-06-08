@@ -7,9 +7,9 @@ export async function POST(request: NextRequest) {
   try {
     // 1. Controle de Acesso (ID 5.5 / 12.2)
     const user = await getCurrentUser()
-    if (!user || user.role !== "ADMIN") {
+    if (!user || (user.role !== "ADMIN" && user.role !== "DONO")) {
       return NextResponse.json(
-        { error: "Acesso negado. Apenas administradores autenticados podem fazer upload de arquivos." },
+        { error: "Acesso negado. Apenas administradores ou donos autenticados podem fazer upload de arquivos." },
         { status: 403 }
       )
     }

@@ -4,10 +4,28 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { HelpCircle } from "lucide-react"
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip"
 
 interface TabCaracteristicasProps {
   fields: any
   onChange: (field: string, val: any) => void
+}
+
+function Help({ text }: { text: string }) {
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger render={
+          <span className="cursor-help inline-flex items-center">
+            <HelpCircle className="h-3.5 w-3.5 text-slate-400 hover:text-slate-600 transition-colors" />
+          </span>
+        } />
+        <TooltipContent className="bg-slate-900 dark:bg-zinc-800 text-white dark:text-zinc-100 p-2 rounded shadow-md text-xs max-w-[220px] leading-relaxed">
+          {text}
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  )
 }
 
 export function TabCaracteristicas({ fields, onChange }: TabCaracteristicasProps) {
@@ -16,9 +34,9 @@ export function TabCaracteristicas({ fields, onChange }: TabCaracteristicasProps
       
       {/* Marca */}
       <div className="grid gap-1.5 col-span-1">
-        <Label htmlFor="marca" className="flex items-center gap-1 text-slate-600 font-medium">
+        <Label htmlFor="marca" className="flex items-center gap-1.5 text-slate-600 font-medium">
           Marca
-          <HelpCircle className="h-3 w-3 text-slate-400" />
+          <Help text="A marca comercial do produto. Ex: Caipira da Serra." />
         </Label>
         <Input 
           id="marca" 
@@ -50,9 +68,9 @@ export function TabCaracteristicas({ fields, onChange }: TabCaracteristicasProps
 
       {/* Data de validade */}
       <div className="grid gap-1.5 col-span-1">
-        <Label htmlFor="dataValidade" className="flex items-center gap-1 text-slate-600 font-medium">
+        <Label htmlFor="dataValidade" className="flex items-center gap-1.5 text-slate-600 font-medium">
           Data de validade
-          <HelpCircle className="h-3 w-3 text-slate-400" />
+          <Help text="Opcional. Data limite sugerida para o consumo seguro do produto." />
         </Label>
         <Input 
           id="dataValidade" 
@@ -84,9 +102,9 @@ export function TabCaracteristicas({ fields, onChange }: TabCaracteristicasProps
 
       {/* Peso Líquido */}
       <div className="grid gap-1.5 col-span-1">
-        <Label htmlFor="pesoLiquido" className="flex items-center gap-1 text-slate-600 font-medium">
+        <Label htmlFor="pesoLiquido" className="flex items-center gap-1.5 text-slate-600 font-medium">
           Peso Líquido (kg)
-          <HelpCircle className="h-3 w-3 text-slate-400" />
+          <Help text="Peso do produto líquido de embalagem, em quilogramas (kg)." />
         </Label>
         <Input 
           id="pesoLiquido" 
@@ -101,9 +119,9 @@ export function TabCaracteristicas({ fields, onChange }: TabCaracteristicasProps
 
       {/* Peso Bruto */}
       <div className="grid gap-1.5 col-span-1">
-        <Label htmlFor="pesoBruto" className="flex items-center gap-1 text-slate-600 font-medium">
+        <Label htmlFor="pesoBruto" className="flex items-center gap-1.5 text-slate-600 font-medium">
           Peso Bruto (kg)
-          <HelpCircle className="h-3 w-3 text-slate-400" />
+          <Help text="Peso total do produto incluindo a embalagem, em quilogramas (kg)." />
         </Label>
         <Input 
           id="pesoBruto" 
@@ -118,9 +136,9 @@ export function TabCaracteristicas({ fields, onChange }: TabCaracteristicasProps
 
       {/* Largura */}
       <div className="grid gap-1.5 col-span-1">
-        <Label htmlFor="largura" className="flex items-center gap-1 text-slate-600 font-medium">
+        <Label htmlFor="largura" className="flex items-center gap-1.5 text-slate-600 font-medium">
           Largura (cm)
-          <HelpCircle className="h-3 w-3 text-slate-400" />
+          <Help text="Largura física da embalagem/unidade, em centímetros (cm)." />
         </Label>
         <Input 
           id="largura" 
@@ -135,9 +153,9 @@ export function TabCaracteristicas({ fields, onChange }: TabCaracteristicasProps
 
       {/* Altura */}
       <div className="grid gap-1.5 col-span-1">
-        <Label htmlFor="altura" className="flex items-center gap-1 text-slate-600 font-medium">
+        <Label htmlFor="altura" className="flex items-center gap-1.5 text-slate-600 font-medium">
           Altura (cm)
-          <HelpCircle className="h-3 w-3 text-slate-400" />
+          <Help text="Altura física da embalagem/unidade, em centímetros (cm)." />
         </Label>
         <Input 
           id="altura" 
@@ -152,9 +170,9 @@ export function TabCaracteristicas({ fields, onChange }: TabCaracteristicasProps
 
       {/* Profundidade */}
       <div className="grid gap-1.5 col-span-1">
-        <Label htmlFor="profundidade" className="flex items-center gap-1 text-slate-600 font-medium">
+        <Label htmlFor="profundidade" className="flex items-center gap-1.5 text-slate-600 font-medium">
           Profundidade (cm)
-          <HelpCircle className="h-3 w-3 text-slate-400" />
+          <Help text="Profundidade física da embalagem/unidade, em centímetros (cm)." />
         </Label>
         <Input 
           id="profundidade" 
@@ -169,9 +187,9 @@ export function TabCaracteristicas({ fields, onChange }: TabCaracteristicasProps
 
       {/* Volumes */}
       <div className="grid gap-1.5 col-span-1">
-        <Label htmlFor="volumes" className="flex items-center gap-1 text-slate-600 font-medium">
+        <Label htmlFor="volumes" className="flex items-center gap-1.5 text-slate-600 font-medium">
           Volumes
-          <HelpCircle className="h-3 w-3 text-slate-400" />
+          <Help text="Quantidade de pacotes ou volumes que compõem uma única unidade deste produto." />
         </Label>
         <Input 
           id="volumes" 
@@ -185,9 +203,9 @@ export function TabCaracteristicas({ fields, onChange }: TabCaracteristicasProps
 
       {/* Itens por caixa */}
       <div className="grid gap-1.5 col-span-1">
-        <Label htmlFor="itensCaixa" className="flex items-center gap-1 text-slate-600 font-medium">
+        <Label htmlFor="itensCaixa" className="flex items-center gap-1.5 text-slate-600 font-medium">
           Itens p/ caixa
-          <HelpCircle className="h-3 w-3 text-slate-400" />
+          <Help text="Quantidade de unidades de produto contidas em uma caixa fechada." />
         </Label>
         <Input 
           id="itensCaixa" 
@@ -211,7 +229,7 @@ export function TabCaracteristicas({ fields, onChange }: TabCaracteristicasProps
           <SelectTrigger id="unidadeMedida" className="h-8 text-xs">
             <SelectValue placeholder="Selecione..." />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="min-w-[180px]">
             <SelectItem value="Centimetros">Centímetros</SelectItem>
             <SelectItem value="Metros">Metros</SelectItem>
             <SelectItem value="Milimetros">Milímetros</SelectItem>
@@ -221,9 +239,9 @@ export function TabCaracteristicas({ fields, onChange }: TabCaracteristicasProps
 
       {/* GTIN/EAN */}
       <div className="grid gap-1.5 col-span-1">
-        <Label htmlFor="gtinEan" className="flex items-center gap-1 text-slate-600 font-medium">
+        <Label htmlFor="gtinEan" className="flex items-center gap-1.5 text-slate-600 font-medium">
           GTIN/EAN
-          <HelpCircle className="h-3 w-3 text-slate-400" />
+          <Help text="Código de barras comercial de identificação do produto." />
         </Label>
         <Input 
           id="gtinEan" 
@@ -236,9 +254,9 @@ export function TabCaracteristicas({ fields, onChange }: TabCaracteristicasProps
 
       {/* GTIN/EAN Tributário */}
       <div className="grid gap-1.5 col-span-1">
-        <Label htmlFor="gtinEanTributario" className="flex items-center gap-1 text-slate-600 font-medium">
+        <Label htmlFor="gtinEanTributario" className="flex items-center gap-1.5 text-slate-600 font-medium">
           GTIN/EAN tributário
-          <HelpCircle className="h-3 w-3 text-slate-400" />
+          <Help text="Código de barras comercial do produto faturado no documento fiscal." />
         </Label>
         <Input 
           id="gtinEanTributario" 
@@ -251,17 +269,17 @@ export function TabCaracteristicas({ fields, onChange }: TabCaracteristicasProps
 
       {/* Departamento */}
       <div className="grid gap-1.5 col-span-2">
-        <Label htmlFor="departamento" className="flex items-center gap-1 text-slate-600 font-medium">
-          Departamento
+        <Label htmlFor="departamento" className="flex items-center gap-1 text-slate-600 font-semibold text-xs">
+          Departamento *
         </Label>
         <Select 
           value={fields.departamento || "Não informado"} 
           onValueChange={val => onChange("departamento", val)}
         >
-          <SelectTrigger id="departamento" className="h-8 text-xs">
+          <SelectTrigger id="departamento" className="h-9 text-xs w-full md:min-w-[280px]">
             <SelectValue placeholder="Selecione..." />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="min-w-[280px]">
             <SelectItem value="Não informado">Não informado</SelectItem>
             <SelectItem value="Alimentos">Alimentos / Ovos</SelectItem>
             <SelectItem value="Embalagens">Embalagens</SelectItem>

@@ -172,20 +172,33 @@ enum FinanceiroStatus {
 }
 
 enum UserRole {
+  DONO
   ADMIN
   OPERADOR
   FINANCEIRO
 }
 
 model User {
+  id                  String            @id @default(cuid())
+  name                String
+  email               String            @unique
+  password            String
+  role                UserRole          @default(ADMIN)
+  cpf                 String?
+  customPermissionId  String?
+  customPermission    CustomPermission? @relation(fields: [customPermissionId], references: [id], onDelete: SetNull)
+  active              Boolean           @default(true)
+  onboardingDismissed Boolean           @default(false)
+  auditLogs           AuditLog[]
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+}
+
+model CustomPermission {
   id        String   @id @default(cuid())
-  name      String
-  email     String   @unique
-  password  String
-  role      UserRole @default(ADMIN)
-  active    Boolean  @default(true)
-  onboardingDismissed Boolean @default(false)
-  auditLogs AuditLog[]
+  nome      String   @unique
+  recursos  String   // Armazena JSON dos módulos permitidos, ex: '["dashboard", "logistica"]'
+  users     User[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -204,11 +217,23 @@ model CompanyProfile {
 }
 
 model ExpenseCategory {
-  id        String   @id @default(cuid())
-  nome      String   @unique
-  ativo     Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String   @id @default(cuid())
+  nome        String   @unique
+  ativo       Boolean  @default(true)
+  descricao   String?
+  valorMensal Float?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model IncomeCategory {
+  id          String   @id @default(cuid())
+  nome        String   @unique
+  ativo       Boolean  @default(true)
+  descricao   String?
+  valorMensal Float?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model PaymentCondition {

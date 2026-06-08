@@ -362,10 +362,10 @@ export function ProdutoForm({
                 <div className="grid gap-1.5 col-span-1">
                   <Label htmlFor="formato" className="text-slate-600 font-medium text-xs">Formato</Label>
                   <Select value={formato} onValueChange={(val: any) => setFormato(val)}>
-                    <SelectTrigger id="formato" className="h-9 text-xs">
+                    <SelectTrigger id="formato" className="h-9 text-xs w-full md:min-w-[200px]">
                       <SelectValue placeholder="Formato..." />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="min-w-[240px]">
                       <SelectItem value="SIMPLES">Simples (item único)</SelectItem>
                       <SelectItem value="COMPOSICAO">Com composição (Kit/União)</SelectItem>
                       <SelectItem value="VARIACOES">Com variações (Grades)</SelectItem>
@@ -417,12 +417,12 @@ export function ProdutoForm({
 
               {/* Tabs content */}
               <Tabs defaultValue="caracteristicas" className="w-full">
-                <TabsList className="grid grid-cols-4 bg-slate-50 border w-full max-w-2xl rounded-xl h-10 p-1 mb-4">
-                  <TabsTrigger value="caracteristicas" className="text-xs h-8 rounded-lg">Características</TabsTrigger>
-                  <TabsTrigger value="imagens" className="text-xs h-8 rounded-lg">Imagens</TabsTrigger>
-                  <TabsTrigger value="tributacao" className="text-xs h-8 rounded-lg">Tributação</TabsTrigger>
-                  <TabsTrigger value="estrutura" className="text-xs h-8 rounded-lg" disabled={formato !== "COMPOSICAO"}>
-                    Estrutura {formato !== "COMPOSICAO" && <span className="text-[9px] font-normal ml-1">(Apenas Kit)</span>}
+                <TabsList className="grid grid-cols-4 bg-slate-100/70 dark:bg-zinc-900/50 border border-slate-200 dark:border-zinc-800 w-full max-w-2xl rounded-xl h-10 p-1 gap-1 mb-6">
+                  <TabsTrigger value="caracteristicas" className="text-sm">Características</TabsTrigger>
+                  <TabsTrigger value="imagens" className="text-sm">Imagens</TabsTrigger>
+                  <TabsTrigger value="tributacao" className="text-sm">Tributação</TabsTrigger>
+                  <TabsTrigger value="estrutura" className="text-sm">
+                    Estrutura
                   </TabsTrigger>
                 </TabsList>
 
@@ -443,7 +443,12 @@ export function ProdutoForm({
                     tipoEstoque={tipoEstoque}
                     onTipoEstoqueChange={setTipoEstoque}
                     componentes={componentes}
-                    onComponentesChange={setComponentes}
+                    onComponentesChange={(newComps) => {
+                      setComponentes(newComps)
+                      if (newComps.length > 0) {
+                        setFormato("COMPOSICAO")
+                      }
+                    }}
                     componentesDisponiveis={componentesDisponiveis}
                     onApplyVendaPrice={(val) => setPrecoVenda(val.toFixed(2))}
                   />

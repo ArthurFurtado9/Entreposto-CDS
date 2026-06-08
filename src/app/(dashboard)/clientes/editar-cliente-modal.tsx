@@ -37,20 +37,63 @@ export function EditarClienteModal({ cliente }: { cliente: Cliente }) {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [fetchingCep, setFetchingCep] = useState(false)
+  const [fetchingCnpj, setFetchingCnpj] = useState(false)
 
-  // Estados locais para preenchimento de endereço
+  // Controlled Form State
+  const [nome, setNome] = useState(cliente.nome)
+  const [cnpj, setCnpj] = useState(cliente.cnpj || "")
+  const [email, setEmail] = useState(cliente.email || "")
+  const [cep, setCep] = useState(cliente.cep || "")
   const [rua, setRua] = useState(cliente.rua || "")
   const [bairro, setBairro] = useState(cliente.bairro || "")
   const [cidade, setCidade] = useState(cliente.cidade || "")
   const [estado, setEstado] = useState(cliente.estado || "")
+  const [telefone, setTelefone] = useState(cliente.telefone || "")
+  const [contato, setContato] = useState(cliente.contato || "")
+
+  async function handleCnpjBlur(e: React.FocusEvent<HTMLInputElement>) {
+    const rawCnpj = e.target.value.replace(/\D/g, "")
+    if (rawCnpj.length !== 14) return
+
+    setFetchingCnpj(true)
+    try {
+      const res = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${rawCnpj}`)
+      const data = await res.json()
+      if (res.ok && data) {
+        setNome(data.razao_social || data.nome_fantasia || "")
+        if (data.cep) {
+          setCep(data.cep)
+          setRua(data.logradouro || "")
+          setBairro(data.bairro || "")
+          setCidade(data.municipio || "")
+          setEstado(data.uf || "")
+        }
+        if (data.ddd_telefone_1) {
+          setTelefone(`(${data.ddd_telefone_1.substring(0, 2)}) ${data.ddd_telefone_1.substring(2)}`)
+        } else if (data.telefone) {
+          setTelefone(data.telefone)
+        }
+        if (data.email) {
+          setEmail(data.email)
+        }
+        toast.success("Dados da empresa preenchidos via CNPJ!")
+      } else {
+        toast.error("CNPJ não encontrado ou erro na busca.")
+      }
+    } catch (err) {
+      toast.error("Erro ao buscar CNPJ.")
+    } finally {
+      setFetchingCnpj(false)
+    }
+  }
 
   async function handleCepBlur(e: React.FocusEvent<HTMLInputElement>) {
-    const cep = e.target.value.replace(/\D/g, "")
-    if (cep.length !== 8) return
+    const rawCep = e.target.value.replace(/\D/g, "")
+    if (rawCep.length !== 8) return
 
     setFetchingCep(true)
     try {
-      const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`)
+      const res = await fetch(`https://viacep.com.br/ws/${rawCep}/json/`)
       const data = await res.json()
       if (data.erro) {
         toast.error("CEP não encontrado.")
@@ -72,18 +115,17 @@ export function EditarClienteModal({ cliente }: { cliente: Cliente }) {
     event.preventDefault()
     setLoading(true)
 
-    const formData = new FormData(event.currentTarget)
     const rawData = {
-      nome: formData.get("nome") as string,
-      cnpj: formData.get("cnpj") as string,
-      email: formData.get("email") as string,
-      cep: formData.get("cep") as string,
-      rua: formData.get("rua") as string,
-      bairro: formData.get("bairro") as string,
-      cidade: formData.get("cidade") as string,
-      estado: formData.get("estado") as string,
-      telefone: formData.get("telefone") as string,
-      contato: formData.get("contato") as string,
+      nome,
+      cnpj,
+      email,
+      cep,
+      rua,
+      bairro,
+      cidade,
+      estado,
+      telefone,
+      contato,
     }
 
     try {
@@ -106,10 +148,16 @@ export function EditarClienteModal({ cliente }: { cliente: Cliente }) {
     <Dialog open={open} onOpenChange={(val) => {
       setOpen(val)
       if (val) {
+        setNome(cliente.nome)
+        setCnpj(cliente.cnpj || "")
+        setEmail(cliente.email || "")
+        setCep(cliente.cep || "")
         setRua(cliente.rua || "")
         setBairro(cliente.bairro || "")
         setCidade(cliente.cidade || "")
         setEstado(cliente.estado || "")
+        setTelefone(cliente.telefone || "")
+        setContato(cliente.contato || "")
       }
     }}>
       <DialogTrigger render={
@@ -122,24 +170,45 @@ export function EditarClienteModal({ cliente }: { cliente: Cliente }) {
           <DialogHeader>
             <DialogTitle>Editar Cliente</DialogTitle>
             <DialogDescription>
-              Atualize as informações cadastrais do cliente B2B.
+              Atualize as informações cadastrais do cliente B2B. Digite o CNPJ para preencher os dados automaticamente.
             </DialogDescription>
           </DialogHeader>
           
           <div className="grid gap-4 py-4 text-left">
             <div className="grid gap-2">
               <Label htmlFor="nome">Nome / Razão Social</Label>
-              <Input id="nome" name="nome" defaultValue={cliente.nome} required />
+              <Input 
+                id="nome" 
+                name="nome" 
+                value={nome} 
+                onChange={e => setNome(e.target.value)}
+                required 
+              />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
-                <Label htmlFor="cnpj">CNPJ (Opcional)</Label>
-                <Input id="cnpj" name="cnpj" defaultValue={cliente.cnpj || ""} />
+                <Label htmlFor="cnpj" className="flex items-center gap-1">
+                  CNPJ (Opcional)
+                  {fetchingCnpj && <Loader2 className="h-3 w-3 animate-spin text-slate-400" />}
+                </Label>
+                <Input 
+                  id="cnpj" 
+                  name="cnpj" 
+                  value={cnpj} 
+                  onChange={e => setCnpj(e.target.value)}
+                  onBlur={handleCnpjBlur}
+                />
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="email">E-mail (Opcional)</Label>
-                <Input id="email" name="email" type="email" defaultValue={cliente.email || ""} />
+                <Input 
+                  id="email" 
+                  name="email" 
+                  type="email" 
+                  value={email} 
+                  onChange={e => setEmail(e.target.value)}
+                />
               </div>
             </div>
 
@@ -152,7 +221,8 @@ export function EditarClienteModal({ cliente }: { cliente: Cliente }) {
                 <Input 
                   id="cep" 
                   name="cep" 
-                  defaultValue={cliente.cep || ""} 
+                  value={cep} 
+                  onChange={e => setCep(e.target.value)}
                   onBlur={handleCepBlur}
                 />
               </div>
@@ -205,11 +275,21 @@ export function EditarClienteModal({ cliente }: { cliente: Cliente }) {
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="telefone">Telefone</Label>
-                <Input id="telefone" name="telefone" defaultValue={cliente.telefone || ""} />
+                <Input 
+                  id="telefone" 
+                  name="telefone" 
+                  value={telefone} 
+                  onChange={e => setTelefone(e.target.value)}
+                />
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="contato">Nome do Contato</Label>
-                <Input id="contato" name="contato" defaultValue={cliente.contato || ""} />
+                <Input 
+                  id="contato" 
+                  name="contato" 
+                  value={contato} 
+                  onChange={e => setContato(e.target.value)}
+                />
               </div>
             </div>
           </div>
@@ -234,3 +314,4 @@ export function EditarClienteModal({ cliente }: { cliente: Cliente }) {
     </Dialog>
   )
 }
+

@@ -11,7 +11,6 @@ import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Loader2, UploadCloud, Building2 } from "lucide-react"
 import { saveCompanyProfile } from "@/actions/configuracoes"
-import Image from "next/image"
 
 const companyProfileSchema = z.object({
   razaoSocial: z.string().min(2, "Razão Social é obrigatória"),
@@ -30,6 +29,7 @@ type CompanyProfileForm = z.infer<typeof companyProfileSchema>
 
 export function TabEmpresa({ initialData }: { initialData: any }) {
   const [isUploading, setIsUploading] = useState(false)
+  const [fetchingCnpj, setFetchingCnpj] = useState(false)
   
   const form = useForm<CompanyProfileForm>({
     resolver: zodResolver(companyProfileSchema),
@@ -71,6 +71,48 @@ export function TabEmpresa({ initialData }: { initialData: any }) {
       toast.error("Erro inesperado no upload.")
     } finally {
       setIsUploading(false)
+    }
+  }
+
+  const handleCnpjBlur = async (e: React.FocusEvent<HTMLInputElement>) => {
+    const rawCnpj = e.target.value.replace(/\D/g, "")
+    if (rawCnpj.length !== 14) return
+
+    setFetchingCnpj(true)
+    try {
+      const res = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${rawCnpj}`)
+      const data = await res.json()
+      if (res.ok && data) {
+        form.setValue("razaoSocial", data.razao_social || data.nome_fantasia || "")
+        
+        let addressParts = []
+        if (data.logradouro) addressParts.push(data.logradouro)
+        if (data.numero) addressParts.push(data.numero)
+        if (data.bairro) addressParts.push(data.bairro)
+        if (data.municipio) addressParts.push(data.municipio)
+        if (data.uf) addressParts.push(data.uf)
+        
+        const fullAddress = addressParts.join(", ")
+        form.setValue("endereco", fullAddress)
+
+        if (data.ddd_telefone_1) {
+          form.setValue("telefone", `(${data.ddd_telefone_1.substring(0, 2)}) ${data.ddd_telefone_1.substring(2)}`)
+        } else if (data.telefone) {
+          form.setValue("telefone", data.telefone)
+        }
+        
+        if (data.email) {
+          form.setValue("email", data.email)
+        }
+
+        toast.success("Dados cadastrais preenchidos via CNPJ!")
+      } else {
+        toast.error("CNPJ não encontrado ou erro na busca.")
+      }
+    } catch (err) {
+      toast.error("Erro ao buscar CNPJ.")
+    } finally {
+      setFetchingCnpj(false)
     }
   }
 
@@ -146,11 +188,16 @@ export function TabEmpresa({ initialData }: { initialData: any }) {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="cnpj">CNPJ *</Label>
+                <Label htmlFor="cnpj" className="flex items-center gap-1">
+                  CNPJ *
+                  {fetchingCnpj && <Loader2 className="h-3 w-3 animate-spin text-slate-400" />}
+                </Label>
                 <Input
                   id="cnpj"
                   placeholder="00.000.000/0000-00"
-                  {...form.register("cnpj")}
+                  {...form.register("cnpj", {
+                    onBlur: handleCnpjBlur
+                  })}
                 />
                 {form.formState.errors.cnpj && (
                   <span className="text-xs text-red-500">{form.formState.errors.cnpj.message}</span>
@@ -220,3 +267,4 @@ export function TabEmpresa({ initialData }: { initialData: any }) {
     </Card>
   )
 }
+

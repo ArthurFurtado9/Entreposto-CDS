@@ -18,7 +18,7 @@ export async function getCurrentUser() {
 
     if (!userId) return null
 
-    const user = await prisma.user.findUnique({
+    let user = await prisma.user.findUnique({
       where: { id: userId },
       select: {
         id: true,
@@ -29,6 +29,22 @@ export async function getCurrentUser() {
         onboardingDismissed: true,
       },
     })
+
+    // Auto-promoção para DONO caso seja o e-mail do Arthur
+    if (user && user.email === "arthurbr002006@gmail.com" && user.role !== "DONO") {
+      user = await prisma.user.update({
+        where: { id: user.id },
+        data: { role: "DONO" },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          role: true, 
+          active: true,
+          onboardingDismissed: true,
+        },
+      })
+    }
 
     return user
   } catch {
@@ -43,7 +59,7 @@ export async function requireAdmin() {
     throw new Error("Não autenticado.")
   }
 
-  if (user.role !== "ADMIN") {
+  if (user.role !== "ADMIN" && user.role !== "DONO") {
     throw new Error("Acesso negado. Apenas administradores podem acessar esta funcionalidade.")
   }
 
@@ -64,8 +80,12 @@ export async function requireAuth() {
   return user
 }
 
-export async function requireRole(allowedRoles: ("ADMIN" | "OPERADOR" | "FINANCEIRO")[]) {
+export async function requireRole(allowedRoles: ("DONO" | "ADMIN" | "OPERADOR" | "FINANCEIRO")[]) {
   const user = await requireAuth()
+
+  if (user.role === "DONO") {
+    return user
+  }
 
   if (!allowedRoles.includes(user.role)) {
     throw new Error("Acesso negado. Você não possui privilégios suficientes para acessar esta funcionalidade.")

@@ -7,6 +7,7 @@ import {
   Users,
   Shield,
   Database,
+  LogOut,
 } from "lucide-react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { TabEmpresa } from "./tab-empresa"
@@ -14,28 +15,36 @@ import { TabFinanceiro } from "./tab-financeiro"
 import { TabEquipe } from "./tab-equipe"
 import { TabSeguranca } from "./tab-seguranca"
 import { TabDados } from "./tab-dados"
+import { logout } from "@/actions/auth"
+import { Button } from "@/components/ui/button"
 
 interface ConfiguracoesClientProps {
   currentUserId: string
+  currentUserRole: string
   companyProfile: any
   expenseCategories: any[]
+  incomeCategories: any[]
   paymentConditions: any[]
   users: any[]
+  customPermissions: any[]
   auditLogs: any[]
 }
 
 export function ConfiguracoesClient({
   currentUserId,
+  currentUserRole,
   companyProfile,
   expenseCategories,
+  incomeCategories,
   paymentConditions,
   users,
+  customPermissions,
   auditLogs,
 }: ConfiguracoesClientProps) {
   return (
     <div className="flex flex-col gap-8 min-h-screen bg-slate-50/50 dark:bg-zinc-950 -m-4 p-4 md:-m-6 md:p-6 lg:-m-8 lg:p-8">
       {/* Header */}
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 dark:border-zinc-800/50 pb-4">
         <div className="flex items-center gap-3">
           <div className="flex items-center justify-center size-10 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 shadow-lg shadow-violet-500/25">
             <Settings className="size-5 text-white" />
@@ -49,6 +58,18 @@ export function ConfiguracoesClient({
             </p>
           </div>
         </div>
+        <Button 
+          variant="outline" 
+          className="border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 dark:border-red-950/30 dark:text-red-400 dark:hover:bg-red-950/20"
+          onClick={async () => {
+            if (confirm("Tem certeza que deseja sair do sistema?")) {
+              await logout()
+            }
+          }}
+        >
+          <LogOut className="size-4 mr-2" />
+          Sair do Sistema
+        </Button>
       </div>
 
       {/* Tabs */}
@@ -100,12 +121,18 @@ export function ConfiguracoesClient({
         <TabsContent value="financeiro" className="border-none p-0 outline-none mt-0">
           <TabFinanceiro
             initialCategories={expenseCategories}
+            initialIncomeCategories={incomeCategories}
             initialConditions={paymentConditions}
           />
         </TabsContent>
 
         <TabsContent value="equipe" className="border-none p-0 outline-none mt-0">
-          <TabEquipe initialUsers={users} currentUserId={currentUserId} />
+          <TabEquipe
+            initialUsers={users}
+            currentUserId={currentUserId}
+            currentUserRole={currentUserRole}
+            customPermissions={customPermissions}
+          />
         </TabsContent>
 
         <TabsContent value="seguranca" className="border-none p-0 outline-none mt-0">
