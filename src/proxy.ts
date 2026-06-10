@@ -13,10 +13,10 @@ export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // Rotas públicas que não precisam de autenticação
-  const isPublicRoute = pathname.startsWith("/login") || pathname.startsWith("/register")
+  const isPublicRoute = pathname === "/" || pathname.startsWith("/login") || pathname.startsWith("/register")
 
   if (isPublicRoute) {
-    if (token) {
+    if (token && (pathname.startsWith("/login") || pathname.startsWith("/register"))) {
       try {
         await jwtVerify(token, JWT_SECRET)
         // Se já tem um token válido e está tentando acessar login/register, vai para o dashboard
