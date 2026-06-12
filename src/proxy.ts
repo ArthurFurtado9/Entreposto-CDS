@@ -13,7 +13,13 @@ export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // Rotas públicas que não precisam de autenticação
-  const isPublicRoute = pathname === "/" || pathname.startsWith("/login") || pathname.startsWith("/register")
+  const isPublicRoute = 
+    pathname === "/" || 
+    pathname.startsWith("/login") || 
+    pathname.startsWith("/register") ||
+    pathname.startsWith("/termos") ||
+    pathname.startsWith("/privacidade") ||
+    pathname.startsWith("/contato")
 
   if (isPublicRoute) {
     if (token && (pathname.startsWith("/login") || pathname.startsWith("/register"))) {

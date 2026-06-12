@@ -8,6 +8,7 @@ import { Pencil, Loader2 } from "lucide-react"
 import { editarCliente } from "@/actions/clientes"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
+import { formatPhoneOrCell, formatCnpj } from "@/lib/utils"
 import {
   Dialog,
   DialogContent,
@@ -41,14 +42,14 @@ export function EditarClienteModal({ cliente }: { cliente: Cliente }) {
 
   // Controlled Form State
   const [nome, setNome] = useState(cliente.nome)
-  const [cnpj, setCnpj] = useState(cliente.cnpj || "")
+  const [cnpj, setCnpj] = useState(cliente.cnpj ? formatCnpj(cliente.cnpj) : "")
   const [email, setEmail] = useState(cliente.email || "")
   const [cep, setCep] = useState(cliente.cep || "")
   const [rua, setRua] = useState(cliente.rua || "")
   const [bairro, setBairro] = useState(cliente.bairro || "")
   const [cidade, setCidade] = useState(cliente.cidade || "")
   const [estado, setEstado] = useState(cliente.estado || "")
-  const [telefone, setTelefone] = useState(cliente.telefone || "")
+  const [telefone, setTelefone] = useState(cliente.telefone ? formatPhoneOrCell(cliente.telefone) : "")
   const [contato, setContato] = useState(cliente.contato || "")
 
   async function handleCnpjBlur(e: React.FocusEvent<HTMLInputElement>) {
@@ -69,9 +70,9 @@ export function EditarClienteModal({ cliente }: { cliente: Cliente }) {
           setEstado(data.uf || "")
         }
         if (data.ddd_telefone_1) {
-          setTelefone(`(${data.ddd_telefone_1.substring(0, 2)}) ${data.ddd_telefone_1.substring(2)}`)
+          setTelefone(formatPhoneOrCell(`(${data.ddd_telefone_1.substring(0, 2)}) ${data.ddd_telefone_1.substring(2)}`))
         } else if (data.telefone) {
-          setTelefone(data.telefone)
+          setTelefone(formatPhoneOrCell(data.telefone))
         }
         if (data.email) {
           setEmail(data.email)
@@ -149,14 +150,14 @@ export function EditarClienteModal({ cliente }: { cliente: Cliente }) {
       setOpen(val)
       if (val) {
         setNome(cliente.nome)
-        setCnpj(cliente.cnpj || "")
+        setCnpj(cliente.cnpj ? formatCnpj(cliente.cnpj) : "")
         setEmail(cliente.email || "")
         setCep(cliente.cep || "")
         setRua(cliente.rua || "")
         setBairro(cliente.bairro || "")
         setCidade(cliente.cidade || "")
         setEstado(cliente.estado || "")
-        setTelefone(cliente.telefone || "")
+        setTelefone(cliente.telefone ? formatPhoneOrCell(cliente.telefone) : "")
         setContato(cliente.contato || "")
       }
     }}>
@@ -196,7 +197,7 @@ export function EditarClienteModal({ cliente }: { cliente: Cliente }) {
                   id="cnpj" 
                   name="cnpj" 
                   value={cnpj} 
-                  onChange={e => setCnpj(e.target.value)}
+                  onChange={e => setCnpj(formatCnpj(e.target.value))}
                   onBlur={handleCnpjBlur}
                 />
               </div>
@@ -279,7 +280,7 @@ export function EditarClienteModal({ cliente }: { cliente: Cliente }) {
                   id="telefone" 
                   name="telefone" 
                   value={telefone} 
-                  onChange={e => setTelefone(e.target.value)}
+                  onChange={e => setTelefone(formatPhoneOrCell(e.target.value))}
                 />
               </div>
               <div className="grid gap-2">

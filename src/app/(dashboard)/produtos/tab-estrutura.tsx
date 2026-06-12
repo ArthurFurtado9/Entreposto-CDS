@@ -256,7 +256,7 @@ export function TabEstrutura({
           variant="outline" 
           size="sm" 
           onClick={handleAddRow}
-          className="h-8 border-indigo-200 text-indigo-600 hover:bg-indigo-50"
+          className="h-8 border-orange-200 text-[#f9943b] hover:bg-orange-50"
         >
           <Plus className="h-3.5 w-3.5 mr-1.5" />
           Adicionar outro item
@@ -268,7 +268,7 @@ export function TabEstrutura({
             variant="ghost"
             size="sm"
             onClick={() => onApplyVendaPrice(precoTotalVenda)}
-            className="h-8 text-indigo-600 hover:bg-indigo-50 font-semibold"
+            className="h-8 text-[#f9943b] hover:bg-orange-50 font-semibold"
           >
             Aplicar Preço Venda da Estrutura
           </Button>
@@ -285,7 +285,7 @@ export function TabEstrutura({
         </div>
         <div className="grid gap-1 md:text-right">
           <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Preço Total de Venda (Sugerido)</span>
-          <span className="text-lg font-bold text-indigo-600">
+          <span className="text-lg font-bold text-[#f9943b]">
             {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(precoTotalVenda)}
           </span>
         </div>

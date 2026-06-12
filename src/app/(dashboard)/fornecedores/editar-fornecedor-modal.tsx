@@ -16,6 +16,7 @@ import { Label } from "@/components/ui/label"
 import { Pencil, Loader2, Search } from "lucide-react"
 import { atualizarFornecedor } from "@/actions/fornecedores"
 import { toast } from "sonner"
+import { formatPhoneOrCell } from "@/lib/utils"
 
 interface Fornecedor {
   id: string
@@ -64,7 +65,7 @@ export function EditarFornecedorModal({ fornecedor }: { fornecedor: Fornecedor }
   // Controlled fields
   const [cnpj, setCnpj] = useState("")
   const [nome, setNome] = useState("")
-  const [contato, setContato] = useState("")
+  const [contato, setContato] = useState(fornecedor.contato ? formatPhoneOrCell(fornecedor.contato) : "")
   const [email, setEmail] = useState("")
   const [cep, setCep] = useState("")
   const [rua, setRua] = useState("")
@@ -92,7 +93,7 @@ export function EditarFornecedorModal({ fornecedor }: { fornecedor: Fornecedor }
       setCidade(data.municipio || "")
       setEstado(data.uf || "")
       if (data.ddd_telefone_1) {
-        setContato(data.ddd_telefone_1)
+        setContato(formatPhoneOrCell(data.ddd_telefone_1))
       }
       toast.success("Dados preenchidos automaticamente!")
     } catch {
@@ -173,7 +174,7 @@ export function EditarFornecedorModal({ fornecedor }: { fornecedor: Fornecedor }
       if (val) {
         setNome(fornecedor.nome)
         setCnpj(fornecedor.cnpj ? formatCnpj(fornecedor.cnpj) : "")
-        setContato(fornecedor.contato || "")
+        setContato(fornecedor.contato ? formatPhoneOrCell(fornecedor.contato) : "")
         setEmail(fornecedor.email || "")
         setCep(fornecedor.cep || "")
         setRua(fornecedor.rua || "")
@@ -243,7 +244,7 @@ export function EditarFornecedorModal({ fornecedor }: { fornecedor: Fornecedor }
                   id="contato"
                   name="contato"
                   value={contato}
-                  onChange={(e) => setContato(e.target.value)}
+                  onChange={(e) => setContato(formatPhoneOrCell(e.target.value))}
                   placeholder="(00) 00000-0000"
                 />
               </div>

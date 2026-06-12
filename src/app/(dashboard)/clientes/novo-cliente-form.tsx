@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { UserPlus, Loader2 } from "lucide-react"
 import { criarClienteCompleto } from "@/actions/clientes"
+import { formatPhoneOrCell, formatCnpj } from "@/lib/utils"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 
@@ -47,9 +48,9 @@ export function NovoClienteForm() {
           setEstado(data.uf || "")
         }
         if (data.ddd_telefone_1) {
-          setTelefone(`(${data.ddd_telefone_1.substring(0, 2)}) ${data.ddd_telefone_1.substring(2)}`)
+          setTelefone(formatPhoneOrCell(`(${data.ddd_telefone_1.substring(0, 2)}) ${data.ddd_telefone_1.substring(2)}`))
         } else if (data.telefone) {
-          setTelefone(data.telefone)
+          setTelefone(formatPhoneOrCell(data.telefone))
         }
         if (data.email) {
           setEmail(data.email)
@@ -136,7 +137,7 @@ export function NovoClienteForm() {
     <Card className="border-none shadow-sm bg-white">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-base font-bold text-slate-900">
-          <UserPlus className="h-4 w-4 text-violet-600" />
+          <UserPlus className="h-4 w-4 text-[#f9943b]" />
           Cadastrar Novo Cliente
         </CardTitle>
         <CardDescription>
@@ -167,7 +168,7 @@ export function NovoClienteForm() {
                 id="cnpj" 
                 name="cnpj" 
                 value={cnpj}
-                onChange={e => setCnpj(e.target.value)}
+                onChange={e => setCnpj(formatCnpj(e.target.value))}
                 onBlur={handleCnpjBlur}
                 placeholder="Ex: 00.000.000/0001-00" 
               />
@@ -253,7 +254,7 @@ export function NovoClienteForm() {
                 id="telefone" 
                 name="telefone" 
                 value={telefone}
-                onChange={e => setTelefone(e.target.value)}
+                onChange={e => setTelefone(formatPhoneOrCell(e.target.value))}
                 placeholder="Ex: (54) 99999-9999" 
               />
             </div>

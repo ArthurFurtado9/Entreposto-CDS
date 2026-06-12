@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, useTransition } from "react"
+import { useState, useTransition, useEffect } from "react"
+import { useSearchParams } from "next/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
@@ -44,15 +45,28 @@ interface ProdutosClientProps {
 
 export function ProdutosClient({ initialData, componentesDisponiveis, isAdmin }: ProdutosClientProps) {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [data, setData] = useState<Produto[]>(initialData)
   const [searchTerm, setSearchTerm] = useState("")
   const [isAlertVisible, setIsAlertVisible] = useState(true)
   const [isPending, startTransition] = useTransition()
   
   // Modals state
-  const [isCreateOpen, setIsCreateOpen] = useState(false)
+  const [isCreateOpen, setIsCreateOpen] = useState(searchParams?.get("novo") === "true")
   const [editingId, setEditingId] = useState<string | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (searchParams?.get("novo") === "true") {
+      setIsCreateOpen(true)
+      // Clean query parameter from URL to prevent reopen on reload
+      const params = new URLSearchParams(window.location.search)
+      params.delete("novo")
+      const newRelativePathQuery = window.location.pathname + (params.toString() ? `?${params.toString()}` : "")
+      router.replace(newRelativePathQuery)
+    }
+  }, [searchParams, router])
+
 
   // Client-side quick search filtering
   const filteredProdutos = data.filter(p => {
@@ -117,14 +131,14 @@ export function ProdutosClient({ initialData, componentesDisponiveis, isAdmin }:
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex flex-col gap-1">
           <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
-            <ShoppingBag className="h-6 w-6 text-indigo-600" />
+            <ShoppingBag className="h-6 w-6 text-[#f9943b]" />
             Produtos Cadastrados
           </h1>
           <p className="text-sm text-muted-foreground">Gerencie o portfólio de produtos, composições e regras fiscais.</p>
         </div>
         <Button 
           onClick={() => setIsCreateOpen(true)}
-          className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-md shadow-indigo-600/15"
+          className="bg-[#f9943b] hover:bg-[#e07a2c] text-white shadow-md shadow-orange-500/15"
         >
           <Plus className="mr-2 h-4 w-4" />
           Novo Produto

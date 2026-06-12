@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Image as ImageIcon, Link as LinkIcon, Upload, Download, Trash2, Loader2 } from "lucide-react"
 import { toast } from "sonner"
+import { validateImageDimensions } from "@/lib/utils"
 
 interface TabImagensProps {
   imagemUrl: string
@@ -22,6 +23,12 @@ export function TabImagens({ imagemUrl, onChange }: TabImagensProps) {
     // Validar localmente tamanho
     if (file.size > 2 * 1024 * 1024) {
       toast.error("Arquivo muito grande. Limite de 2MB.")
+      return
+    }
+
+    const isValidDimensions = await validateImageDimensions(file)
+    if (!isValidDimensions) {
+      toast.error("As dimensões da imagem superam o limite máximo de 1920x1920px.")
       return
     }
 
@@ -75,7 +82,7 @@ export function TabImagens({ imagemUrl, onChange }: TabImagensProps) {
         <div className="space-y-4">
           <div className="grid gap-1.5">
             <Label htmlFor="imagemUrl" className="flex items-center gap-2 text-slate-600 font-medium">
-              <LinkIcon className="h-4 w-4 text-indigo-500" />
+              <LinkIcon className="h-4 w-4 text-[#f9943b]" />
               Endereço URL da Imagem do Produto
             </Label>
             <Input
@@ -87,7 +94,7 @@ export function TabImagens({ imagemUrl, onChange }: TabImagensProps) {
               className="h-9 text-xs"
             />
             <p className="text-[10px] text-muted-foreground">
-              Cole a URL de uma imagem hospedada ou faça o upload de um arquivo local.
+              Cole a URL de uma imagem hospedada ou faça o upload de um arquivo local. Máx: 2MB (JPG, PNG, WebP) | Dimensões máx: 1920x1920px
             </p>
           </div>
 
@@ -115,7 +122,7 @@ export function TabImagens({ imagemUrl, onChange }: TabImagensProps) {
                 </>
               ) : (
                 <>
-                  <Upload className="h-3.5 w-3.5 mr-1.5 text-indigo-600" />
+                  <Upload className="h-3.5 w-3.5 mr-1.5 text-[#f9943b]" />
                   Carregar do Computador
                 </>
               )}

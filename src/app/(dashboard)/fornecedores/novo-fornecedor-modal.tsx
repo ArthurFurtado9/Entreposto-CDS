@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, useCallback } from "react"
+import { useState, useCallback, useEffect } from "react"
+import { useSearchParams, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -16,6 +17,7 @@ import { Label } from "@/components/ui/label"
 import { Plus, Loader2, Search } from "lucide-react"
 import { criarFornecedor } from "@/actions/fornecedores"
 import { toast } from "sonner"
+import { formatPhoneOrCell } from "@/lib/utils"
 
 // Aplica máscara visual de CNPJ: XX.XXX.XXX/XXXX-XX
 function formatCnpj(value: string): string {
@@ -44,10 +46,22 @@ interface BrasilApiCnpjResponse {
 }
 
 export function NovoFornecedorModal() {
-  const [open, setOpen] = useState(false)
+  const searchParams = useSearchParams()
+  const router = useRouter()
+  const [open, setOpen] = useState(searchParams?.get("novo") === "true")
   const [loading, setLoading] = useState(false)
   const [fetchingCnpj, setFetchingCnpj] = useState(false)
   const [fetchingCep, setFetchingCep] = useState(false)
+
+  useEffect(() => {
+    if (searchParams?.get("novo") === "true") {
+      setOpen(true)
+      const params = new URLSearchParams(window.location.search)
+      params.delete("novo")
+      const newRelativePathQuery = window.location.pathname + (params.toString() ? `?${params.toString()}` : "")
+      router.replace(newRelativePathQuery)
+    }
+  }, [searchParams, router])
 
   // Campos controlados do formulário
   const [cnpj, setCnpj] = useState("")
@@ -95,7 +109,7 @@ export function NovoFornecedorModal() {
       setCidade(data.municipio || "")
       setEstado(data.uf || "")
       if (data.ddd_telefone_1) {
-        setContato(data.ddd_telefone_1)
+        setContato(formatPhoneOrCell(data.ddd_telefone_1))
       }
 
       toast.success("Dados preenchidos automaticamente!")
@@ -237,7 +251,7 @@ export function NovoFornecedorModal() {
                   id="contato"
                   name="contato"
                   value={contato}
-                  onChange={(e) => setContato(e.target.value)}
+                  onChange={(e) => setContato(formatPhoneOrCell(e.target.value))}
                   placeholder="(00) 00000-0000"
                 />
               </div>

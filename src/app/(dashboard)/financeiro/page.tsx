@@ -62,9 +62,9 @@ export default async function FinanceiroPage() {
 
       <div className="grid gap-4 grid-cols-2 lg:grid-cols-5">
         {/* Highlighted Net Profit Card */}
-        <Card className="border-none shadow-md bg-gradient-to-br from-violet-600 via-indigo-600 to-blue-700 text-white hover:shadow-lg hover:shadow-indigo-600/15 transition-all duration-300 hover:-translate-y-0.5 overflow-hidden col-span-2 lg:col-span-1">
+        <Card className="border-none shadow-md bg-gradient-to-br from-[#f9943b] via-[#e07a2c] to-amber-600 text-white hover:shadow-lg hover:shadow-orange-500/15 transition-all duration-300 hover:-translate-y-0.5 overflow-hidden col-span-2 lg:col-span-1">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-semibold text-indigo-100">Lucro Líquido</CardTitle>
+            <CardTitle className="text-sm font-semibold text-orange-50">Lucro Líquido</CardTitle>
             {isLucroPositivo ? (
               <TrendingUp className="h-4 w-4 text-emerald-300" />
             ) : (
@@ -75,7 +75,7 @@ export default async function FinanceiroPage() {
             <div className="text-xl sm:text-2xl font-bold">
               {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(lucroLiquido)}
             </div>
-            <p className="text-[10px] text-indigo-200 mt-1">
+            <p className="text-[10px] text-orange-100 mt-1">
               Recebido ({new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(totalRecebido)}) - Pago
             </p>
           </CardContent>

@@ -41,7 +41,7 @@ export function OnboardingCards({ initialShow }: OnboardingCardsProps) {
       title: "Recebimento de Ovos",
       description: "Registre a chegada de ovos dos fornecedores. Contas a pagar são emitidas no financeiro automaticamente.",
       icon: Download,
-      color: "bg-indigo-500/10 text-indigo-500 border-indigo-500/20",
+      color: "bg-orange-500/10 text-orange-500 border-orange-500/20",
     },
     {
       title: "Ovoscopia (Triagem)",
@@ -50,7 +50,7 @@ export function OnboardingCards({ initialShow }: OnboardingCardsProps) {
       color: "bg-purple-500/10 text-purple-500 border-purple-500/20",
     },
     {
-      title: "Logística (Picking)",
+      title: "Vendas (Saídas)",
       description: "Realize o carregamento de pedidos com distribuição e alocação automática de lotes (FIFO).",
       icon: Truck,
       color: "bg-amber-500/10 text-amber-500 border-amber-500/20",

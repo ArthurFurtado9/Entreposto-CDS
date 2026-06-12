@@ -276,7 +276,7 @@ export function TabFinanceiro({
           </div>
           <Dialog open={incOpen} onOpenChange={setIncOpen}>
             <DialogTrigger render={
-              <Button size="sm" className="bg-violet-600 hover:bg-violet-700 text-white shadow-md shadow-violet-600/20 text-xs">
+              <Button size="sm" className="bg-[#f9943b] hover:bg-[#e07a2c] text-white shadow-md shadow-orange-500/10 text-xs">
                 <Plus className="size-4 mr-1" /> Nova Categoria
               </Button>
             } />
@@ -300,7 +300,7 @@ export function TabFinanceiro({
               </div>
               <DialogFooter>
                 <Button variant="outline" onClick={() => setIncOpen(false)}>Cancelar</Button>
-                <Button onClick={handleCreateIncomeCategory} disabled={loadingAction === "createInc"} className="bg-indigo-600 hover:bg-indigo-700 text-white">
+                <Button onClick={handleCreateIncomeCategory} disabled={loadingAction === "createInc"} className="bg-[#f9943b] hover:bg-[#e07a2c] text-white">
                   {loadingAction === "createInc" ? <Loader2 className="size-4 animate-spin mr-2" /> : "Salvar"}
                 </Button>
               </DialogFooter>
@@ -329,7 +329,7 @@ export function TabFinanceiro({
                 initialIncomeCategories.map((inc) => (
                   <TableRow key={inc.id} className="hover:bg-slate-50/50">
                     <TableCell className="font-semibold text-slate-800 dark:text-slate-200 text-xs">{inc.nome}</TableCell>
-                    <TableCell className="text-xs font-mono text-indigo-600 font-semibold">
+                    <TableCell className="text-xs font-mono text-[#f9943b] font-semibold">
                       {inc.valorMensal ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(inc.valorMensal) : "R$ 0,00"}
                     </TableCell>
                     <TableCell className="text-xs text-muted-foreground max-w-[200px] truncate">{inc.descricao || "-"}</TableCell>
@@ -386,7 +386,7 @@ export function TabFinanceiro({
           </div>
           <Dialog open={catOpen} onOpenChange={setCatOpen}>
             <DialogTrigger render={
-              <Button size="sm" className="bg-violet-600 hover:bg-violet-700 text-white shadow-md shadow-violet-600/20 text-xs">
+              <Button size="sm" className="bg-[#f9943b] hover:bg-[#e07a2c] text-white shadow-md shadow-orange-500/10 text-xs">
                 <Plus className="size-4 mr-1" /> Nova Categoria
               </Button>
             } />
@@ -410,7 +410,7 @@ export function TabFinanceiro({
               </div>
               <DialogFooter>
                 <Button variant="outline" onClick={() => setCatOpen(false)}>Cancelar</Button>
-                <Button onClick={handleCreateCategory} disabled={loadingAction === "createCat"} className="bg-indigo-600 hover:bg-indigo-700 text-white">
+                <Button onClick={handleCreateCategory} disabled={loadingAction === "createCat"} className="bg-[#f9943b] hover:bg-[#e07a2c] text-white">
                   {loadingAction === "createCat" ? <Loader2 className="size-4 animate-spin mr-2" /> : "Salvar"}
                 </Button>
               </DialogFooter>
@@ -496,7 +496,7 @@ export function TabFinanceiro({
           </div>
           <Dialog open={condOpen} onOpenChange={setCondOpen}>
             <DialogTrigger render={
-              <Button size="sm" className="bg-violet-600 hover:bg-violet-700 text-white shadow-md shadow-violet-600/20 text-xs">
+              <Button size="sm" className="bg-[#f9943b] hover:bg-[#e07a2c] text-white shadow-md shadow-orange-500/10 text-xs">
                 <Plus className="size-4 mr-1" /> Nova Condição
               </Button>
             } />
@@ -516,7 +516,7 @@ export function TabFinanceiro({
               </div>
               <DialogFooter>
                 <Button variant="outline" onClick={() => setCondOpen(false)}>Cancelar</Button>
-                <Button onClick={handleCreateCond} disabled={loadingAction === "createCond"} className="bg-indigo-600 hover:bg-indigo-700 text-white">
+                <Button onClick={handleCreateCond} disabled={loadingAction === "createCond"} className="bg-[#f9943b] hover:bg-[#e07a2c] text-white">
                   {loadingAction === "createCond" ? <Loader2 className="size-4 animate-spin mr-2" /> : "Salvar"}
                 </Button>
               </DialogFooter>
@@ -597,7 +597,7 @@ export function TabFinanceiro({
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setEditCatOpen(false)}>Cancelar</Button>
-            <Button onClick={handleUpdateCategory} disabled={loadingAction === "updateCat"} className="bg-indigo-600 hover:bg-indigo-700 text-white">
+            <Button onClick={handleUpdateCategory} disabled={loadingAction === "updateCat"} className="bg-[#f9943b] hover:bg-[#e07a2c] text-white">
               {loadingAction === "updateCat" ? <Loader2 className="size-4 animate-spin mr-2" /> : "Salvar Alterações"}
             </Button>
           </DialogFooter>
@@ -626,7 +626,7 @@ export function TabFinanceiro({
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setEditIncOpen(false)}>Cancelar</Button>
-            <Button onClick={handleUpdateIncomeCategory} disabled={loadingAction === "updateInc"} className="bg-indigo-600 hover:bg-indigo-700 text-white">
+            <Button onClick={handleUpdateIncomeCategory} disabled={loadingAction === "updateInc"} className="bg-[#f9943b] hover:bg-[#e07a2c] text-white">
               {loadingAction === "updateInc" ? <Loader2 className="size-4 animate-spin mr-2" /> : "Salvar Alterações"}
             </Button>
           </DialogFooter>
@@ -651,7 +651,7 @@ export function TabFinanceiro({
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setEditCondOpen(false)}>Cancelar</Button>
-            <Button onClick={handleUpdateCondition} disabled={loadingAction === "updateCond"} className="bg-indigo-600 hover:bg-indigo-700 text-white">
+            <Button onClick={handleUpdateCondition} disabled={loadingAction === "updateCond"} className="bg-[#f9943b] hover:bg-[#e07a2c] text-white">
               {loadingAction === "updateCond" ? <Loader2 className="size-4 animate-spin mr-2" /> : "Salvar Alterações"}
             </Button>
           </DialogFooter>

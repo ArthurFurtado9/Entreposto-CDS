@@ -413,7 +413,7 @@ export function EditarPedidoModal({ pedidoId, clientes, lotes }: EditarPedidoMod
               </div>
               <div>
                 <span className="text-slate-500 font-medium">Valor Total da Carga:</span>{" "}
-                <strong className="text-indigo-600 text-lg">
+                <strong className="text-[#f9943b] text-lg">
                   {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valorTotal)}
                 </strong>
               </div>

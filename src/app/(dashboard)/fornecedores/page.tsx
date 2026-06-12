@@ -26,6 +26,8 @@ import { GraficosFornecedores } from "./graficos-fornecedores"
 
 export const dynamic = "force-dynamic"
 
+import { Suspense } from "react"
+
 export default async function FornecedoresPage() {
   const user = await getCurrentUser()
   const isAdmin = user?.role === "ADMIN"
@@ -49,8 +51,11 @@ export default async function FornecedoresPage() {
           <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">Gestão de Fornecedores</h1>
           <p className="text-sm text-muted-foreground">Cadastre e gerencie as granjas parceiras.</p>
         </div>
-        <NovoFornecedorModal />
+        <Suspense fallback={<div className="h-9 w-24 bg-slate-200 animate-pulse rounded-full" />}>
+          <NovoFornecedorModal />
+        </Suspense>
       </div>
+
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Lado Esquerdo - Tabela de Fornecedores */}

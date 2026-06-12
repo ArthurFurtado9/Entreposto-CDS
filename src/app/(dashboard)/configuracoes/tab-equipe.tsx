@@ -59,7 +59,7 @@ export function TabEquipe({
     { id: "ovoscopia", label: "Ovoscopia" },
     { id: "produtos", label: "Produtos" },
     { id: "clientes", label: "Clientes" },
-    { id: "logistica", label: "Logística" },
+    { id: "logistica", label: "Vendas" },
     { id: "financeiro", label: "Financeiro" },
     { id: "configuracoes", label: "Configurações" }
   ]
@@ -273,16 +273,16 @@ export function TabEquipe({
                         setIsCreatingCustom(false)
                       }
                     }}
-                    className={`cursor-pointer border rounded-xl p-4 flex flex-col gap-2 transition-all hover:border-violet-400 select-none ${
+                    className={`cursor-pointer border rounded-xl p-4 flex flex-col gap-2 transition-all hover:border-orange-400 select-none ${
                       selectedRole === item.role 
-                        ? "border-violet-500 bg-violet-50/30 dark:bg-violet-950/20 ring-1 ring-violet-500" 
+                        ? "border-orange-500 bg-orange-50/30 dark:bg-orange-950/20 ring-1 ring-orange-500" 
                         : "border-slate-200 dark:border-zinc-800"
                     }`}
                   >
                     <div className="flex items-center justify-between">
                       <span className="font-bold text-sm text-slate-800 dark:text-slate-200">{item.label}</span>
                       {selectedRole === item.role && (
-                        <div className="size-4 rounded-full bg-violet-600 text-white flex items-center justify-center">
+                        <div className="size-4 rounded-full bg-[#f9943b] text-white flex items-center justify-center">
                           <Check className="size-2.5 stroke-[3]" />
                         </div>
                       )}
@@ -336,7 +336,7 @@ export function TabEquipe({
                             onClick={() => setSelectedCustomPermId(perm.id)}
                             className={`cursor-pointer border rounded-lg p-3 flex items-center justify-between select-none ${
                               selectedCustomPermId === perm.id 
-                                ? "border-violet-500 bg-violet-50/20 dark:bg-violet-950/10 ring-1 ring-violet-500" 
+                                ? "border-orange-500 bg-orange-50/20 dark:bg-orange-950/10 ring-1 ring-orange-500" 
                                 : "border-slate-200 dark:border-zinc-800"
                             }`}
                           >
@@ -351,7 +351,7 @@ export function TabEquipe({
                               </div>
                             </div>
                             {selectedCustomPermId === perm.id && (
-                              <Check className="size-4 text-violet-600" />
+                              <Check className="size-4 text-[#f9943b]" />
                             )}
                           </div>
                         ))}
@@ -378,7 +378,7 @@ export function TabEquipe({
                             key={mod.id}
                             className={`flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-slate-50/50 dark:hover:bg-zinc-900/50 select-none ${
                               selectedModules.includes(mod.id)
-                                ? "border-violet-500 bg-violet-50/10 dark:bg-violet-950/10"
+                                ? "border-orange-500 bg-orange-50/10 dark:bg-orange-950/10"
                                 : "border-slate-200 dark:border-zinc-800"
                             }`}
                           >
@@ -386,7 +386,7 @@ export function TabEquipe({
                               type="checkbox" 
                               checked={selectedModules.includes(mod.id)}
                               onChange={() => toggleModule(mod.id)}
-                              className="rounded border-slate-300 dark:border-zinc-700 text-violet-600 focus:ring-violet-500 size-4 cursor-pointer"
+                              className="rounded border-slate-300 dark:border-zinc-700 text-[#f9943b] focus:ring-[#f9943b] size-4 cursor-pointer"
                             />
                             <span className="text-sm font-medium text-slate-700 dark:text-slate-200">{mod.label}</span>
                           </label>
@@ -402,7 +402,7 @@ export function TabEquipe({
               <Button type="button" variant="outline" onClick={() => { setShowForm(false); resetForm(); }}>
                 Cancelar
               </Button>
-              <Button type="submit" className="bg-gradient-to-r from-violet-600 to-indigo-600 text-white" disabled={loadingSubmit}>
+              <Button type="submit" className="bg-[#f9943b] hover:bg-[#e07a2c] text-white shadow-md shadow-orange-500/10" disabled={loadingSubmit}>
                 {loadingSubmit ? (
                   <><Loader2 className="size-4 animate-spin mr-2" /> Salvando...</>
                 ) : (
@@ -428,7 +428,7 @@ export function TabEquipe({
         {isDono && (
           <Button 
             onClick={() => setShowForm(true)}
-            className="bg-gradient-to-r from-violet-600 to-indigo-600 text-white hover:from-violet-700 hover:to-indigo-700 shadow-md shadow-violet-500/10"
+            className="bg-[#f9943b] hover:bg-[#e07a2c] text-white hover:from-orange-600 hover:to-orange-700 shadow-md shadow-orange-500/15"
           >
             <Plus className="size-4 mr-1.5" />
             Novo Funcionário
@@ -458,8 +458,8 @@ export function TabEquipe({
                     <div className="flex flex-col">
                       <div className="flex items-center gap-1.5">
                         <span className="font-medium">{user.name}</span>
-                        {isSelf && <Badge variant="outline" className="text-[10px] py-0 px-1 border-violet-200 text-violet-700">Você</Badge>}
-                        {user.role === "DONO" && <Badge variant="outline" className="text-[10px] py-0 px-1 bg-violet-100 text-violet-700 border-violet-200">Dono</Badge>}
+                        {isSelf && <Badge variant="outline" className="text-[10px] py-0 px-1 border-orange-200 text-orange-700 bg-orange-50/50">Você</Badge>}
+                        {user.role === "DONO" && <Badge variant="outline" className="text-[10px] py-0 px-1 bg-orange-100 text-orange-700 border-orange-200">Dono</Badge>}
                       </div>
                       <span className="text-xs text-muted-foreground">{user.email}</span>
                       {user.cpf && <span className="text-[10px] text-muted-foreground/85">CPF: {user.cpf}</span>}

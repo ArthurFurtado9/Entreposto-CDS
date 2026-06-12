@@ -93,11 +93,11 @@ export default async function DashboardPage(props: PageProps) {
 
         {/* Card 2: Fluxo Financeiro Pendente (Clickable) */}
         <Link href="/financeiro" className="block group">
-          <Card className="glass-panel hover-lift h-full border border-indigo-500/10 hover:border-indigo-500/25 transition-all duration-300 cursor-pointer relative overflow-hidden">
-            <div className="absolute top-0 left-0 right-0 h-0.5 bg-indigo-500 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
+          <Card className="glass-panel hover-lift h-full border border-orange-500/10 hover:border-orange-500/25 transition-all duration-300 cursor-pointer relative overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-0.5 bg-[#f9943b] scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-slate-600 dark:text-slate-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">Contas Pendentes</CardTitle>
-              <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-950/35 text-indigo-600 dark:text-indigo-400 group-hover:scale-105 transition-transform">
+              <CardTitle className="text-sm font-medium text-slate-600 dark:text-slate-400 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">Contas Pendentes</CardTitle>
+              <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-orange-50 dark:bg-orange-950/35 text-[#f9943b] dark:text-orange-400 group-hover:scale-105 transition-transform">
                 <CircleDollarSign className="h-4 w-4" />
               </div>
             </CardHeader>
@@ -120,7 +120,7 @@ export default async function DashboardPage(props: PageProps) {
                   </tr>
                 </tbody>
               </table>
-              <div className="text-[10px] text-indigo-500 group-hover:text-indigo-600 font-bold mt-2.5 flex items-center justify-end gap-1 opacity-80 group-hover:opacity-100 transition-all">
+              <div className="text-[10px] text-[#f9943b] group-hover:text-[#e07a2c] font-bold mt-2.5 flex items-center justify-end gap-1 opacity-80 group-hover:opacity-100 transition-all">
                 Ver no Financeiro →
               </div>
             </CardContent>
@@ -246,7 +246,7 @@ export default async function DashboardPage(props: PageProps) {
                       <td className="px-4 py-3.5 text-right font-medium text-slate-600 dark:text-slate-400">
                         {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(item.total)}
                       </td>
-                      <td className="px-4 py-3.5 text-right font-bold text-indigo-600 dark:text-indigo-400">
+                      <td className="px-4 py-3.5 text-right font-bold text-[#f9943b] dark:text-orange-400">
                         {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(item.ticketMedio)}
                       </td>
                     </tr>
@@ -287,7 +287,7 @@ export default async function DashboardPage(props: PageProps) {
                     data.topProdutos.map((item: any, i: number) => (
                       <tr key={i} className="border-b border-slate-100 dark:border-zinc-800 hover:bg-slate-50/50 dark:hover:bg-zinc-800/50 transition-colors">
                         <td className="px-4 py-3.5 font-medium text-slate-900 dark:text-white flex items-center gap-2">
-                          <span className="flex items-center justify-center w-6 h-6 rounded-full bg-indigo-50 dark:bg-indigo-950 text-[10px] font-bold text-indigo-600 dark:text-indigo-400">
+                          <span className="flex items-center justify-center w-6 h-6 rounded-full bg-orange-50 dark:bg-orange-950 text-[10px] font-bold text-[#f9943b] dark:text-orange-400">
                             {i + 1}
                           </span>
                           {formatTipoEmbalagem(item.tipoEmbalagem)}

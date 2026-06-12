@@ -336,3 +336,28 @@ model ComponenteProduto {
   updatedAt       DateTime @updatedAt
 }
 
+model Funcionario {
+  id              String    @id @default(cuid())
+  nome            String
+  cpf             String    @unique
+  rg              String?
+  dataNascimento  DateTime?
+  fotoUrl         String?
+  cargo           String?
+  dataAdmissao    DateTime?
+  ctps            String?
+  salario         Decimal?
+  telefone        String?   // Represented as Fone
+  celular         String?
+  email           String?
+  cep             String?
+  uf              String?
+  cidade          String?
+  bairro          String?
+  endereco        String?
+  numero          String?
+  complemento     String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+

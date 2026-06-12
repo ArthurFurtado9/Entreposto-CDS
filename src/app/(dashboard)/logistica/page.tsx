@@ -40,7 +40,7 @@ export default async function LogisticaPage() {
     <div className="flex flex-col gap-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold tracking-tight">Logística e Expedição</h1>
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight">Vendas e Saídas</h1>
           <p className="text-sm text-muted-foreground">Gerencie a separação de pedidos B2B e alocação de estoque.</p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
@@ -51,7 +51,7 @@ export default async function LogisticaPage() {
       <div className="grid gap-6 md:grid-cols-2">
         <Card className="glass-panel">
           <CardHeader>
-            <CardTitle>Painel de Separação (Picking)</CardTitle>
+            <CardTitle>Painel de Saídas</CardTitle>
             <CardDescription>Pedidos aguardando separação e envio.</CardDescription>
           </CardHeader>
           <CardContent>
@@ -98,7 +98,7 @@ export default async function LogisticaPage() {
 
         <Card className="glass-panel">
           <CardHeader>
-            <CardTitle>Alocação FIFO (Smart Picking)</CardTitle>
+            <CardTitle>Alocação FIFO (Saída Inteligente)</CardTitle>
             <CardDescription>Lotes sugeridos pelo sistema para saída prioritária.</CardDescription>
           </CardHeader>
           <CardContent>

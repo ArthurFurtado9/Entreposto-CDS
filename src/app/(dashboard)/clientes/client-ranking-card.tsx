@@ -36,14 +36,14 @@ export function ClientRankingCard() {
     })
   }, [period])
 
-  const COLORS = ["#6366f1", "#4f46e5", "#4338ca", "#3730a3", "#312e81"]
+  const COLORS = ["#f9943b", "#e07a2c", "#c6631b", "#ab4e0d", "#8f3b00"]
 
   return (
     <Card className="border-none shadow-sm bg-white flex flex-col justify-between h-[360px]">
       <CardHeader className="pb-2 flex flex-row items-center justify-between space-y-0">
         <div>
           <CardTitle className="text-base font-bold text-slate-900 flex items-center gap-2">
-            <TrendingUp className="h-4 w-4 text-indigo-500" />
+            <TrendingUp className="h-4 w-4 text-[#f9943b]" />
             Ranking de Compras (Clientes)
           </CardTitle>
           <CardDescription>Clientes que mais adquiriram volume no período.</CardDescription>

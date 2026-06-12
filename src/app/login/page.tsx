@@ -187,14 +187,21 @@ export default function LoginPage() {
       {/* Footer Details */}
       <div className="w-full text-center space-y-2 py-4">
         <div className="flex justify-center gap-4 text-[10px] font-semibold text-slate-400">
-          <Link href="#" className="hover:text-slate-600 transition-colors">Fale conosco</Link>
+          <Link href="/contato" className="hover:text-slate-600 transition-colors">Fale conosco</Link>
           <span>|</span>
-          <Link href="#" className="hover:text-slate-600 transition-colors">Termos de uso</Link>
+          <Link href="/termos" className="hover:text-slate-600 transition-colors">Termos de uso</Link>
           <span>|</span>
-          <Link href="#" className="hover:text-slate-600 transition-colors">Segurança e privacidade</Link>
+          <Link href="/privacidade" className="hover:text-slate-600 transition-colors">Segurança e privacidade</Link>
         </div>
         <p className="text-[10px] text-slate-400 font-medium">
-          <span className="text-[#f9943b] font-semibold">avilogica.com.br</span> — 2026 — Todos os direitos reservados.
+          <a 
+            href={process.env.NEXT_PUBLIC_SITE_URL || "#"} 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="text-[#f9943b] font-semibold hover:underline"
+          >
+            avilogica.com.br
+          </a> — 2026 — Todos os direitos reservados.
         </p>
       </div>
 

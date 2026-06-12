@@ -309,7 +309,7 @@ export default function Home() {
         
         {/* Ambient Blur Gradients */}
         <div className="absolute top-0 left-1/4 -z-10 h-72 w-72 rounded-full bg-amber-200/40 blur-[100px] pointer-events-none"></div>
-        <div className="absolute top-1/3 right-1/4 -z-10 h-96 w-96 rounded-full bg-indigo-100/40 blur-[120px] pointer-events-none"></div>
+        <div className="absolute top-1/3 right-1/4 -z-10 h-96 w-96 rounded-full bg-orange-100/30 blur-[120px] pointer-events-none"></div>
 
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
@@ -322,7 +322,7 @@ export default function Home() {
               </div>
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 leading-[1.1]">
                 Gestão inteligente para o seu{" "}
-                <span className="bg-gradient-to-r from-amber-600 via-amber-500 to-indigo-600 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-amber-600 via-[#f9943b] to-orange-600 bg-clip-text text-transparent">
                   entreposto de ovos
                 </span>
               </h1>
@@ -364,7 +364,7 @@ export default function Home() {
             <div className="lg:col-span-5 relative w-full max-w-md lg:max-w-none mx-auto">
               
               {/* Background Glow */}
-              <div className="absolute -inset-2 rounded-2xl bg-gradient-to-tr from-amber-500/20 to-indigo-500/10 blur-xl"></div>
+              <div className="absolute -inset-2 rounded-2xl bg-gradient-to-tr from-amber-500/20 to-orange-500/10 blur-xl"></div>
               
               {/* Glassmorphic Live Preview */}
               <div className="relative glass border border-slate-200 rounded-2xl p-5 md:p-6 shadow-2xl flex flex-col gap-4 text-xs">
@@ -932,11 +932,23 @@ export default function Home() {
 
           <div className="h-px bg-slate-900 my-8"></div>
 
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-4 text-[10px] text-slate-600">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4 text-[10px] text-slate-500">
             <p>© {new Date().getFullYear()} Avilógica ERP. Todos os direitos reservados. Feito para o setor avícola.</p>
-            <div className="flex gap-4">
-              <span>Termos de Uso</span>
-              <span>Política de Privacidade</span>
+            <div className="flex flex-wrap gap-4 items-center justify-center sm:justify-end text-slate-500">
+              <Link href="/contato" className="hover:text-slate-200 transition-colors">Fale conosco</Link>
+              <span>|</span>
+              <Link href="/termos" className="hover:text-slate-200 transition-colors">Termos de uso</Link>
+              <span>|</span>
+              <Link href="/privacidade" className="hover:text-slate-200 transition-colors">Segurança e privacidade</Link>
+              <span>|</span>
+              <a 
+                href={process.env.NEXT_PUBLIC_SITE_URL || "#"} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="text-[#f9943b] font-semibold hover:underline"
+              >
+                avilogica.com.br
+              </a>
             </div>
           </div>
 

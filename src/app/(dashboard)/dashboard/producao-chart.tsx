@@ -42,8 +42,8 @@ export function ProducaoChart({ data }: ProducaoChartProps) {
           <AreaChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
             <defs>
               <linearGradient id="colorVolume" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.2}/>
-                <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0}/>
+                <stop offset="5%" stopColor="#f9943b" stopOpacity={0.2}/>
+                <stop offset="95%" stopColor="#f9943b" stopOpacity={0}/>
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" className="dark:stroke-zinc-800" />
@@ -67,7 +67,7 @@ export function ProducaoChart({ data }: ProducaoChartProps) {
                   return (
                     <div className="bg-white dark:bg-zinc-950 p-2.5 border border-slate-100 dark:border-zinc-800 rounded-lg shadow-md">
                       <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">{payload[0].payload.date}</p>
-                      <p className="text-sm font-bold text-violet-600 dark:text-violet-400 mt-0.5">
+                      <p className="text-sm font-bold text-orange-600 dark:text-orange-400 mt-0.5">
                         {payload[0].value?.toLocaleString('pt-BR')} ovos
                       </p>
                     </div>
@@ -79,7 +79,7 @@ export function ProducaoChart({ data }: ProducaoChartProps) {
             <Area 
               type="monotone" 
               dataKey="volume" 
-              stroke="#8b5cf6" 
+              stroke="#f9943b" 
               strokeWidth={2}
               fillOpacity={1} 
               fill="url(#colorVolume)" 

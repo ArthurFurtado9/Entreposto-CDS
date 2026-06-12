@@ -278,7 +278,7 @@ export function ProdutoForm({
         
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
           <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center size-10 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 shadow-lg shadow-indigo-500/25">
+            <div className="flex items-center justify-center size-10 rounded-xl bg-gradient-to-br from-orange-400 to-[#f9943b] shadow-lg shadow-orange-500/25">
               <Sparkles className="size-5 text-white" />
             </div>
             <div>
@@ -295,7 +295,7 @@ export function ProdutoForm({
 
       {loading ? (
         <Card className="border-none shadow-sm bg-white py-24 flex flex-col items-center justify-center gap-3 text-slate-500 rounded-2xl">
-          <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+          <Loader2 className="h-8 w-8 animate-spin text-[#f9943b]" />
           <span className="text-sm font-semibold">Carregando dados do produto...</span>
         </Card>
       ) : (
@@ -350,7 +350,7 @@ export function ProdutoForm({
                     onChange={e => setPrecoVenda(e.target.value)} 
                     placeholder="0.00"
                     required
-                    className="h-9 text-xs font-bold text-indigo-600"
+                    className="h-9 text-xs font-bold text-[#f9943b]"
                     onBlur={e => {
                       const val = parseFloat(e.target.value)
                       if (!isNaN(val)) setPrecoVenda(val.toFixed(2))
@@ -472,7 +472,7 @@ export function ProdutoForm({
             <Button
               type="submit"
               disabled={isPending}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 h-10 text-xs font-bold shadow-md shadow-indigo-600/15"
+              className="bg-[#f9943b] hover:bg-[#e07a2c] text-white px-8 h-10 text-xs font-bold shadow-md shadow-orange-500/15"
             >
               {isPending ? (
                 <>
